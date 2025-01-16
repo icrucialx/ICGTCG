@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokemon TCG Gacha</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      cursor: pointer;
+      background-color: #ffcc00;
+      border: none;
+      border-radius: 5px;
+      color: #333;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #ffc107;
+      transform: scale(1.1);
+    }
+
+    #result {
+      margin-top: 30px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0px;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      width: 150px;
+      height: auto;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      background-color: white;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+      position: relative;
+      transform: scale(2) rotate(-10deg);
+      opacity: 0;
+      overflow: hidden;
+      transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+      padding: 1px;
+    }
+
+    .card.show {
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+      animation: reveal 0.5s ease-out;
+    }
+
+    .card img {
+      width: 100%;
+      height: 230;
+      border-radius: 1px 1px 0 0;
+      max-height: 230px;
+    }
+
+    .card .rarity {
+      font-size: 14px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .card .name {
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .rarity-common {
+      color: gray;
+    }
+
+    .rarity-uncommon {
+      color: green;
+    }
+
+    .rarity-rare {
+      color: blue;
+    }
+
+    .rarity-ultrarare {
+      color: purple;
+    }
+
+    .rarity-secretrare {
+      color: gold;
+    }
+
+    .name-common {
+      color: gray;
+    }
+
+    .name-uncommon {
+      color: green;
+    }
+
+    .name-rare {
+      color: blue;
+    }
+
+    .name-ultrarare {
+      color: purple;
+    }
+
+    .name-secretrare {
+      color: gold;
+    }
+
+    .glow-common {
+      box-shadow: 0 0 10px 4px gray;
+    }
+
+    .glow-uncommon {
+      box-shadow: 0 0 10px 4px green;
+    }
+
+    .glow-rare {
+      box-shadow: 0 0 10px 4px blue;
+    }
+
+    .glow-ultrarare {
+      box-shadow: 0 0 15px 5px purple;
+    }
+
+    .glow-secretrare {
+      box-shadow: 0 0 20px 8px gold;
+    }
+
+    #summon-animation {
+      display: none;
+      margin-bottom: 20px;
+    }
+
+    @keyframes reveal {
+      0% {
+        opacity: 0;
+        transform: scale(0.5) rotate(-10deg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Pokemon TCG Gacha System</h1>
+  <div id="summon-animation">
+    <img src="./images/summon-circle.gif" alt="Summoning Animation" style="width: 200px;">
+  </div>
+  <button onclick="pullCard()">Pull a Card!</button>
+  <button onclick="multiPull(10)">Pull 10 Cards!</button>
+  <div id="result"></div>
+
+  <script>
+    const cardPool = {
+      common: ["Pikachu", "Rattata", "Meowth"],
+      uncommon: ["Charmeleon", "Wartortle", "Ivysaur"],
+      rare: ["Charizard", "Blastoise", "Venusaur"],
+      ultrarare: ["Shiny Charizard GX", "Rainbow Pikachu"],
+      secretrare: ["Gold Mewtwo", "Alternate Art Lugia"]
+    };
+
+    const cardImages = {
+      Pikachu: "./images/pikachu.png",
+      Rattata: "./images/rattata.png",
+      Meowth: "./images/meowth.png",
+      Charmeleon: "./images/charmeleon.png",
+      Wartortle: "./images/wartortle.png",
+      Ivysaur: "./images/ivysaur.png",
+      Charizard: "./images/charizard.png",
+      Blastoise: "./images/blastoise.png",
+      Venusaur: "./images/venusaur.png",
+      "Shiny Charizard GX": "./images/shiny_charizard_gx.png",
+      "Rainbow Pikachu": "./images/rainbow_pikachu.png",
+      "Gold Mewtwo": "./images/gold_mewtwo.png",
+      "Alternate Art Lugia": "./images/alternate_art_lugia.png"
+    };
+
+    const rarityWeights = {
+      common: 60,
+      uncommon: 25,
+      rare: 10,
+      ultrarare: 4,
+      secretrare: 1
+    };
+
+    function weightedRandom(items, weights) {
+      const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+      const random = Math.random() * totalWeight;
+      let cumulativeWeight = 0;
+
+      for (let i = 0; i < items.length; i++) {
+        cumulativeWeight += weights[i];
+        if (random < cumulativeWeight) {
+          return items[i];
+        }
+      }
+    }
+
+    function playSound(soundFile) {
+      const audio = new Audio(soundFile);
+      audio.play();
+    }
+
+    function pullCard() {
+      playSound('./sounds/pull.mp3');
+      const summonAnimation = document.getElementById("summon-animation");
+      summonAnimation.style.display = "block";
+
+      setTimeout(() => {
+        summonAnimation.style.display = "none";
+        const rarities = Object.keys(rarityWeights);
+        const weights = Object.values(rarityWeights);
+        const chosenRarity = weightedRandom(rarities, weights);
+        const card = cardPool[chosenRarity][Math.floor(Math.random() * cardPool[chosenRarity].length)];
+
+        if (chosenRarity === 'rare') playSound('./sounds/rare.mp3');
+        if (chosenRarity === 'ultra_rare') playSound('./sounds/ultra_rare.mp3');
+        if (chosenRarity === 'secret_rare') playSound('./sounds/secret_rare.mp3');
+
+        displayCard(card, chosenRarity);
+      }, 2000);
+    }
+
+    function multiPull(count) {
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+          pullCard();
+        }, i * 500);
+      }
+    }
+
+    function displayCard(card, rarity) {
+      const resultDiv = document.getElementById("result");
+      const cardDiv = document.createElement("div");
+      cardDiv.className = "card show";
+
+      const glowClasses = {
+        common: "glow-common",
+        uncommon: "glow-uncommon",
+        rare: "glow-rare",
+        ultrarare: "glow-ultrarare",
+        secretrare: "glow-secretrare"
+      };
+
+      cardDiv.classList.add(glowClasses[rarity] || "");
+
+      const img = document.createElement("img");
+      img.src = cardImages[card] || "./images/default.png";
+
+      const rarityDiv = document.createElement("div");
+      rarityDiv.className = `rarity rarity-${rarity}`;
+      rarityDiv.innerText = rarity.replace('_', ' ').toUpperCase();
+
+      const nameDiv = document.createElement("div");
+      nameDiv.className = `name name-${rarity}`;
+      nameDiv.innerText = card;
+
+      cardDiv.appendChild(img);
+      cardDiv.appendChild(rarityDiv);
+      cardDiv.appendChild(nameDiv);
+      resultDiv.appendChild(cardDiv);
+    }
+  </script>
+</body>
+</html>
