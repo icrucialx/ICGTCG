@@ -230,6 +230,11 @@
       audio.play();
     }
 
+    // Pull a card on page load
+    document.addEventListener("DOMContentLoaded", () => {
+      pullCard();
+    });
+
     function pullCard() {
       playSound('./sounds/pull.mp3');
       const summonAnimation = document.getElementById("summon-animation");
@@ -243,8 +248,8 @@
         const card = cardPool[chosenRarity][Math.floor(Math.random() * cardPool[chosenRarity].length)];
 
         if (chosenRarity === 'rare') playSound('./sounds/rare.mp3');
-        if (chosenRarity === 'ultra_rare') playSound('./sounds/ultra_rare.mp3');
-        if (chosenRarity === 'secret_rare') playSound('./sounds/secret_rare.mp3');
+        if (chosenRarity === 'ultrarare') playSound('./sounds/ultra_rare.mp3');
+        if (chosenRarity === 'secretrare') playSound('./sounds/secret_rare.mp3');
 
         displayCard(card, chosenRarity);
       }, 2000);
