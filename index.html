@@ -20,6 +20,17 @@
       100% { text-shadow: 0 0 5px violet, 0 0 10px indigo, 0 0 20px blue, 0 0 30px green, 0 0 40px yellow, 0 0 50px orange, 0 0 60px red; }
     }
 
+    @keyframes glisten {
+      0%, 100% { opacity: 0.9; filter: brightness(1); }
+      50% { opacity: 1; filter: brightness(1.5); }
+    }
+
+    @keyframes sparkle {
+      0% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+      50% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
+      100% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+    }
+
     body {
       font-family: Arial, sans-serif;
       text-align: center;
@@ -54,7 +65,7 @@
       align-items: center;
       justify-content: flex-start;
       width: 150px;
-      height: auto;
+      height: 230;
       border: 2px solid #ccc;
       border-radius: 10px;
       background-color: transparent;
@@ -79,6 +90,27 @@
       border-radius: 1px 1px 0 0;
       max-height: 230px;
       background-color: transparent;
+      animation: glisten 3s infinite;
+    }
+
+    .card.glow-common {
+      animation: sparkle 3s infinite;
+    }
+
+    .card.glow-uncommon {
+      animation: sparkle 3s infinite, glisten 3s infinite;
+    }
+
+    .card.glow-rare {
+      animation: sparkle 2s infinite, glisten 3s infinite;
+    }
+
+    .card.glow-ultrarare {
+      animation: sparkle 1.5s infinite, glisten 3s infinite;
+    }
+
+    .card.glow-secretrare {
+      animation: sparkle 1s infinite, glisten 3s infinite;
     }
 
     .card .rarity {
@@ -131,26 +163,6 @@
 
     .name-secretrare {
       color: gold;
-    }
-
-    .glow-common {
-      box-shadow: 0 0 10px 4px gray;
-    }
-
-    .glow-uncommon {
-      box-shadow: 0 0 10px 4px green;
-    }
-
-    .glow-rare {
-      box-shadow: 0 0 10px 4px blue;
-    }
-
-    .glow-ultrarare {
-      box-shadow: 0 0 15px 5px purple;
-    }
-
-    .glow-secretrare {
-      box-shadow: 0 0 20px 8px gold;
     }
 
     #summon-animation {
@@ -259,32 +271,3 @@
       cardDiv.className = "card show";
 
       const glowClasses = {
-        common: "glow-common",
-        uncommon: "glow-uncommon",
-        rare: "glow-rare",
-        ultrarare: "glow-ultrarare",
-        secretrare: "glow-secretrare"
-      };
-
-      cardDiv.classList.add(glowClasses[rarity] || "");
-
-      const img = document.createElement("img");
-      img.src = cardImages[card] || "./images/default.png";
-      img.style.backgroundColor = "transparent";
-
-      const rarityDiv = document.createElement("div");
-      rarityDiv.className = `rarity rarity-${rarity}`;
-      rarityDiv.innerText = rarity.replace('_', ' ').toUpperCase();
-
-      const nameDiv = document.createElement("div");
-      nameDiv.className = `name name-${rarity}`;
-      nameDiv.innerText = card;
-
-      cardDiv.appendChild(img);
-      cardDiv.appendChild(rarityDiv);
-      cardDiv.appendChild(nameDiv);
-      resultDiv.appendChild(cardDiv);
-    }
-  </script>
-</body>
-</html>
