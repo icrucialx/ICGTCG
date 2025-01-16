@@ -21,14 +21,14 @@
     }
 
     @keyframes glisten {
-      0%, 100% { opacity: 0.9; filter: brightness(1); }
-      50% { opacity: 1; filter: brightness(1.5); }
+      0%, 100% { opacity: 0.9; filter: brightness(0.5); }
+      25% { opacity: 1; filter: brightness(0.5); }
     }
 
     @keyframes sparkle {
       0% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
-      50% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
-      100% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+      25% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
+      50% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
     }
 
     body {
@@ -46,8 +46,8 @@
     }
 
     h1 {
-      margin-bottom: 20px;
-      font-size: 3em;
+      margin-bottom: 10px;
+      font-size: 2em;
       animation: rainbow 5s infinite, glow 5s infinite;
     }
 
