@@ -271,3 +271,32 @@
       cardDiv.className = "card show";
 
       const glowClasses = {
+        common: "glow-common",
+        uncommon: "glow-uncommon",
+        rare: "glow-rare",
+        ultrarare: "glow-ultrarare",
+        secretrare: "glow-secretrare"
+      };
+
+      cardDiv.classList.add(glowClasses[rarity] || "");
+
+      const img = document.createElement("img");
+      img.src = cardImages[card] || "./images/default.png";
+      img.style.backgroundColor = "transparent";
+
+      const rarityDiv = document.createElement("div");
+      rarityDiv.className = `rarity rarity-${rarity}`;
+      rarityDiv.innerText = rarity.replace('_', ' ').toUpperCase();
+
+      const nameDiv = document.createElement("div");
+      nameDiv.className = `name name-${rarity}`;
+      nameDiv.innerText = card;
+
+      cardDiv.appendChild(img);
+      cardDiv.appendChild(rarityDiv);
+      cardDiv.appendChild(nameDiv);
+      resultDiv.appendChild(cardDiv);
+    }
+  </script>
+</body>
+</html>
