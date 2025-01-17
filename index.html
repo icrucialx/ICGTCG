@@ -225,6 +225,15 @@
   </div>
   <div id="result"></div>
 
+  <!-- Audio Tags for Sounds -->
+  <audio id="common-sound" src="./sounds/common.mp3"></audio>
+  <audio id="uncommon-sound" src="./sounds/uncommon.mp3"></audio>
+  <audio id="rare-sound" src="./sounds/rare.mp3"></audio>
+  <audio id="ultrarare-sound" src="./sounds/ultrarare.mp3"></audio>
+  <audio id="secretrare-sound" src="./sounds/secretrare.mp3"></audio>
+  <audio id="summon-sound" src="./sounds/summon.mp3"></audio>
+</body>
+  
   <script>
     const cardPool = {
       common: ["Pikachu", "Rattata", "Meowth", "Pidgey", "Zubat", "Sandshrew", "Poliwag", "Geodude", "Krabby", "Magnemite"],
@@ -312,134 +321,104 @@
       drawThreeCards();
     });
 
-    function drawThreeCards() {
-      const summonAnimation = document.getElementById("summon-animation");
-      summonAnimation.style.display = "block";
+function playSound(id) {
+  const audio = document.getElementById(id);
+  if (audio) {
+    audio.currentTime = 0; // Reset the audio to the start
+    audio.play();
+  }
+}
 
+function drawThreeCards() {
+  const summonAnimation = document.getElementById("summon-animation");
+
+  // Play summon animation sound
+  playSound("summon-sound");
+  summonAnimation.style.display = "block";
+
+  setTimeout(() => {
+    summonAnimation.style.display = "none";
+    const resultDiv = document.getElementById("result");
+    resultDiv.innerHTML = ""; // Clear previous cards
+
+    let delay = 0;
+    for (let i = 0; i < 3; i++) {
       setTimeout(() => {
-        summonAnimation.style.display = "none";
-        const resultDiv = document.getElementById("result");
-        resultDiv.innerHTML = ""; // Clear previous cards
+        const rarities = Object.keys(rarityWeights);
+        const weights = Object.values(rarityWeights);
+        const chosenRarity = weightedRandom(rarities, weights);
+        const card = cardPool[chosenRarity][Math.floor(Math.random() * cardPool[chosenRarity].length)];
 
-        let delay = 0;
-        for (let i = 0; i < 3; i++) {
+        // Play sound based on rarity
+        playSound(`${chosenRarity}-sound`);
+
+        const cardDiv = document.createElement("div");
+        cardDiv.className = `card glow-${chosenRarity}`;
+        cardDiv.style.transform = `translateY(${i * 20}px)`; // Start stacked downward
+
+        const img = document.createElement("img");
+        img.src = cardImages[card] || "./images/default.png";
+
+        const rarityDiv = document.createElement("div");
+        rarityDiv.className = `rarity rarity-${chosenRarity}`;
+        rarityDiv.innerText = chosenRarity.replace('_', ' ').toUpperCase();
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = `name name-${chosenRarity}`;
+        nameDiv.innerText = card;
+
+        cardDiv.appendChild(img);
+        cardDiv.appendChild(rarityDiv);
+        cardDiv.appendChild(nameDiv);
+        resultDiv.appendChild(cardDiv);
+
+        // Ensure the card is visible immediately for ultra rare and secret rare
+        cardDiv.style.opacity = "1";
+
+        // Handle zoom for ultra rare and secret rare
+        if (chosenRarity === "ultrarare" || chosenRarity === "secretrare") {
+          cardDiv.classList.add("zoom");
+
+          // Pause the process to showcase the card
           setTimeout(() => {
-            const rarities = Object.keys(rarityWeights);
-            const weights = Object.values(rarityWeights);
-            const chosenRarity = weightedRandom(rarities, weights);
-            const card = cardPool[chosenRarity][Math.floor(Math.random() * cardPool[chosenRarity].length)];
+            cardDiv.style.transform = "scale(2) translateY(-50px)";
+            cardDiv.style.zIndex = "10";
+          }, 100);
 
-            const cardDiv = document.createElement("div");
-            cardDiv.className = `card glow-${chosenRarity}`;
-            cardDiv.style.transform = `translateY(${i * 20}px)`; // Start stacked downward
+          // Reset the zoom and resume process
+          setTimeout(() => {
+            cardDiv.style.transform = `translateX(${i * 160}px) scale(1)`;
+            cardDiv.style.zIndex = "1";
+            cardDiv.classList.remove("zoom");
+          }, 3000); // Showcase the card for 3 seconds
 
-            const img = document.createElement("img");
-            img.src = cardImages[card] || "./images/default.png";
-
-            const rarityDiv = document.createElement("div");
-            rarityDiv.className = `rarity rarity-${chosenRarity}`;
-            rarityDiv.innerText = chosenRarity.replace('_', ' ').toUpperCase();
-
-            const nameDiv = document.createElement("div");
-            nameDiv.className = `name name-${chosenRarity}`;
-            nameDiv.innerText = card;
-
-            cardDiv.appendChild(img);
-            cardDiv.appendChild(rarityDiv);
-            cardDiv.appendChild(nameDiv);
-            resultDiv.appendChild(cardDiv);
-
-            // Ensure the card is visible immediately for ultra rare and secret rare
-            cardDiv.style.opacity = "1";
-
-            // Handle zoom for ultra rare and secret rare
-            if (chosenRarity === "ultrarare" || chosenRarity === "secretrare") {
-              cardDiv.classList.add("zoom");
-
-              // Pause the process to showcase the card
-              setTimeout(() => {
-                cardDiv.style.transform = "scale(2) translateY(-50px)";
-                cardDiv.style.zIndex = "10";
-              }, 100);
-
-              // Reset the zoom and resume process
-              setTimeout(() => {
-                cardDiv.style.transform = `translateX(${i * 160}px) scale(1)`;
-                cardDiv.style.zIndex = "1";
-                cardDiv.classList.remove("zoom");
-              }, 3000); // Showcase the card for 3 seconds
-
-              delay += 3000; // Add delay for showcasing the card
-            }
-
-            // Add glowing border effect with less intensity
-            const glowColors = {
-              common: "rgba(128, 128, 128, 0.5)",
-              uncommon: "rgba(0, 128, 0, 0.5)",
-              rare: "rgba(0, 0, 255, 0.5)",
-              ultrarare: "rgba(128, 0, 128, 0.7)",
-              secretrare: "rgba(255, 215, 0, 0.7)"
-            };
-
-            if (glowColors[chosenRarity]) {
-              cardDiv.style.boxShadow = `0 0 15px 5px ${glowColors[chosenRarity]}`;
-              cardDiv.style.animation = `pulse-${chosenRarity} 2s infinite`;
-            }
-
-            // Pulse animations for each rarity
-            const style = document.createElement('style');
-            style.textContent = `
-              @keyframes pulse-common {
-                0%, 100% {
-                  box-shadow: 0 0 10px 3px rgba(128, 128, 128, 0.5);
-                }
-                50% {
-                  box-shadow: 0 0 15px 5px rgba(128, 128, 128, 0.7);
-                }
-              }
-              @keyframes pulse-uncommon {
-                0%, 100% {
-                  box-shadow: 0 0 10px 3px rgba(0, 128, 0, 0.5);
-                }
-                50% {
-                  box-shadow: 0 0 15px 5px rgba(0, 128, 0, 0.7);
-                }
-              }
-              @keyframes pulse-rare {
-                0%, 100% {
-                  box-shadow: 0 0 10px 3px rgba(0, 0, 255, 0.5);
-                }
-                50% {
-                  box-shadow: 0 0 15px 5px rgba(0, 0, 255, 0.7);
-                }
-              }
-              @keyframes pulse-ultrarare {
-                0%, 100% {
-                  box-shadow: 0 0 15px 5px rgba(128, 0, 128, 0.7);
-                }
-                50% {
-                  box-shadow: 0 0 20px 7px rgba(128, 0, 128, 1);
-                }
-              }
-              @keyframes pulse-secretrare {
-                0%, 100% {
-                  box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7);
-                }
-                50% {
-                  box-shadow: 0 0 20px 7px rgba(255, 215, 0, 1);
-                }
-              }
-            `;
-            document.head.appendChild(style);
-
-            setTimeout(() => {
-              cardDiv.classList.add("show");
-              cardDiv.style.transform = `translateX(${i * 160}px)`; // Move side by side
-            }, delay + 100);
-          }, delay + i * 1000); // Delay each card by 1000ms
+          delay += 3000; // Add delay for showcasing the card
         }
-      }, 1000);
+
+        // Add glowing border effect with less intensity
+        const glowColors = {
+          common: "rgba(128, 128, 128, 0.5)",
+          uncommon: "rgba(0, 128, 0, 0.5)",
+          rare: "rgba(0, 0, 255, 0.5)",
+          ultrarare: "rgba(128, 0, 128, 0.7)",
+          secretrare: "rgba(255, 215, 0, 0.7)"
+        };
+
+        if (glowColors[chosenRarity]) {
+          cardDiv.style.boxShadow = `0 0 15px 5px ${glowColors[chosenRarity]}`;
+          cardDiv.style.animation = `pulse-${chosenRarity} 2s infinite`;
+        }
+
+        setTimeout(() => {
+          cardDiv.classList.add("show");
+          cardDiv.style.transform = `translateX(${i * 160}px)`; // Move side by side
+        }, delay + 100);
+      }, delay + i * 1000); // Delay each card by 1000ms
     }
+  }, 1000);
+}
+
   </script>
 </body>
 </html>
+
