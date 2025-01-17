@@ -22,13 +22,40 @@
 
     @keyframes glisten {
       0%, 100% { opacity: 0.9; filter: brightness(1); }
-      50% { opacity: 1; filter: brightness(1); }
+      50% { opacity: 1; filter: brightness(1.15); }
     }
 
     @keyframes sparkle {
       0% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
-      25% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
+      50% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
       100% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+    }
+
+    @keyframes flip {
+      0% {
+        transform: rotateY(0deg);
+      }
+      50% {
+        transform: rotateY(90deg);
+      }
+      100% {
+        transform: rotateY(180deg);
+      }
+    }
+
+    @keyframes zoomIn {
+      0% {
+        transform: scale(1);
+        z-index: 1;
+      }
+      50% {
+        transform: scale(1.5);
+        z-index: 10;
+      }
+      100% {
+        transform: scale(1);
+        z-index: 1;
+      }
     }
 
     body {
@@ -46,17 +73,17 @@
     }
 
     h1 {
-      margin-bottom: 10px;
-      font-size: 2em;
+      margin-bottom: 20px;
+      font-size: 3em;
       animation: rainbow 5s infinite, glow 5s infinite;
     }
 
     #result {
       margin-top: 30px;
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 0px;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
     }
 
     .card {
@@ -64,52 +91,60 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      width: 150px;
-      height: 230;
+      width: 250px;
+      height: 350px;
       border: 2px solid #ccc;
       border-radius: 10px;
       background-color: transparent;
       box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-      position: relative;
-      transform: scale(2) rotate(-10deg);
+      position: absolute;
+      transform: translateY(0) rotateY(0deg);
       opacity: 0;
       overflow: hidden;
-      transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+      transition: transform 0.5s ease-out, opacity 0.5s ease-out;
       padding: 1px;
     }
 
     .card.show {
-      transform: scale(1) rotate(0deg);
       opacity: 1;
-      animation: reveal 0.5s ease-out;
+      animation: flip 1s ease-out forwards;
+    }
+
+    .card.zoom {
+      animation: zoomIn 2s ease-in-out;
     }
 
     .card img {
       width: 100%;
-      height: 230px;
+      height: 430px;
       border-radius: 1px 1px 0 0;
-      max-height: 230px;
+      max-height: 430px;
       background-color: transparent;
       animation: glisten 3s infinite;
     }
 
     .card.glow-common {
-      animation: sparkle 3s infinite;
+      border-color: gray;
+      animation: sparkle 1s infinite;
     }
 
     .card.glow-uncommon {
-      animation: sparkle 3s infinite, glisten 3s infinite;
+      border-color: green;
+      animation: sparkle 1.5s infinite, glisten 1.5s infinite;
     }
 
     .card.glow-rare {
-      animation: sparkle 2s infinite, glisten 3s infinite;
+      border-color: blue;
+      animation: sparkle 2s infinite, glisten 2s infinite;
     }
 
     .card.glow-ultrarare {
+      border-color: purple;
       animation: sparkle 1.5s infinite, glisten 3s infinite;
     }
 
     .card.glow-secretrare {
+      border-color: gold;
       animation: sparkle 1s infinite, glisten 3s infinite;
     }
 
@@ -191,33 +226,70 @@
 
   <script>
     const cardPool = {
-      common: ["Pikachu", "Rattata", "Meowth"],
-      uncommon: ["Charmeleon", "Wartortle", "Ivysaur"],
-      rare: ["Charizard", "Blastoise", "Venusaur"],
-      ultrarare: ["Shiny Charizard GX", "Rainbow Pikachu"],
-      secretrare: ["Gold Mewtwo", "Alternate Art Lugia"]
+      common: ["Pikachu", "Rattata", "Meowth", "Pidgey", "Zubat", "Sandshrew", "Poliwag", "Geodude", "Krabby", "Magnemite"],
+      uncommon: ["Charmeleon", "Wartortle", "Ivysaur", "Ponyta", "Haunter", "Kadabra", "Machoke", "Weepinbell", "Graveler", "Cloyster"],
+      rare: ["Charizard", "Blastoise", "Venusaur", "Gengar", "Dragonite", "Alakazam", "Machamp", "Rhydon", "Lapras", "Arcanine"],
+      ultrarare: ["Shiny Charizard GX", "Rainbow Pikachu", "Mega Lucario", "Shiny Umbreon", "Shiny Gyarados", "Primal Kyogre", "Shiny Rayquaza", "Shiny Metagross", "Shiny Tyranitar", "Shiny Greninja"],
+      secretrare: ["Gold Mewtwo", "Alternate Art Lugia", "Gold Zacian", "Rainbow Eternatus", "Gold Reshiram", "Rainbow Zekrom", "Gold Dialga", "Gold Palkia", "Gold Giratina", "Gold Arceus"]
     };
 
     const cardImages = {
       Pikachu: "./images/pikachu.png",
       Rattata: "./images/rattata.png",
       Meowth: "./images/meowth.png",
+      Pidgey: "./images/pidgey.png",
+      Zubat: "./images/zubat.png",
+      Sandshrew: "./images/sandshrew.png",
+      Poliwag: "./images/poliwag.png",
+      Geodude: "./images/geodude.png",
+      Krabby: "./images/krabby.png",
+      Magnemite: "./images/magnemite.png",
       Charmeleon: "./images/charmeleon.png",
       Wartortle: "./images/wartortle.png",
       Ivysaur: "./images/ivysaur.png",
+      Ponyta: "./images/ponyta.png",
+      Haunter: "./images/haunter.png",
+      Kadabra: "./images/kadabra.png",
+      Machoke: "./images/machoke.png",
+      Weepinbell: "./images/weepinbell.png",
+      Graveler: "./images/graveler.png",
+      Cloyster: "./images/cloyster.png",
       Charizard: "./images/charizard.png",
       Blastoise: "./images/blastoise.png",
       Venusaur: "./images/venusaur.png",
+      Gengar: "./images/gengar.png",
+      Dragonite: "./images/dragonite.png",
+      Alakazam: "./images/alakazam.png",
+      Machamp: "./images/machamp.png",
+      Rhydon: "./images/rhydon.png",
+      Lapras: "./images/lapras.png",
+      Arcanine: "./images/arcanine.png",
       "Shiny Charizard GX": "./images/shiny_charizard_gx.png",
       "Rainbow Pikachu": "./images/rainbow_pikachu.png",
+      "Mega Lucario": "./images/mega_lucario.png",
+      "Shiny Umbreon": "./images/shiny_umbreon.png",
+      "Shiny Gyarados": "./images/shiny_gyarados.png",
+      "Primal Kyogre": "./images/primal_kyogre.png",
+      "Shiny Rayquaza": "./images/shiny_rayquaza.png",
+      "Shiny Metagross": "./images/shiny_metagross.png",
+      "Shiny Tyranitar": "./images/shiny_tyranitar.png",
+      "Shiny Greninja": "./images/shiny_greninja.png",
       "Gold Mewtwo": "./images/gold_mewtwo.png",
-      "Alternate Art Lugia": "./images/alternate_art_lugia.png"
+      "Alternate Art Lugia": "./images/alternate_art_lugia.png",
+      "Gold Zacian": "./images/gold_zacian.png",
+      "Rainbow Eternatus": "./images/rainbow_eternatus.png",
+      "Gold Reshiram": "./images/gold_reshiram.png",
+      "Rainbow Zekrom": "./images/rainbow_zekrom.png",
+      "Gold Dialga": "./images/gold_dialga.png",
+      "Gold Palkia": "./images/gold_palkia.png",
+      "Gold Giratina": "./images/gold_giratina.png",
+      "Gold Arceus": "./images/gold_arceus.png"
     };
 
     const rarityWeights = {
-      common: 60,
-      uncommon: 25,
-      rare: 10,
+      common: 50,
+      uncommon: 30,
+      rare: 15,
       ultrarare: 4,
       secretrare: 1
     };
@@ -235,67 +307,137 @@
       }
     }
 
-    function playSound(soundFile) {
-      const audio = new Audio(soundFile);
-      audio.play();
-    }
-
-    // Pull a card on page load
     document.addEventListener("DOMContentLoaded", () => {
-      pullCard();
+      drawFiveCards();
     });
 
-    function pullCard() {
-      playSound('./sounds/pull.mp3');
+    function drawFiveCards() {
       const summonAnimation = document.getElementById("summon-animation");
       summonAnimation.style.display = "block";
 
       setTimeout(() => {
         summonAnimation.style.display = "none";
-        const rarities = Object.keys(rarityWeights);
-        const weights = Object.values(rarityWeights);
-        const chosenRarity = weightedRandom(rarities, weights);
-        const card = cardPool[chosenRarity][Math.floor(Math.random() * cardPool[chosenRarity].length)];
+        const resultDiv = document.getElementById("result");
+        resultDiv.innerHTML = ""; // Clear previous cards
 
-        if (chosenRarity === 'rare') playSound('./sounds/rare.mp3');
-        if (chosenRarity === 'ultrarare') playSound('./sounds/ultra_rare.mp3');
-        if (chosenRarity === 'secretrare') playSound('./sounds/secret_rare.mp3');
+        let delay = 0;
+        for (let i = 0; i < 5; i++) {
+          setTimeout(() => {
+            const rarities = Object.keys(rarityWeights);
+            const weights = Object.values(rarityWeights);
+            const chosenRarity = weightedRandom(rarities, weights);
+            const card = cardPool[chosenRarity][Math.floor(Math.random() * cardPool[chosenRarity].length)];
 
-        displayCard(card, chosenRarity);
-      }, 2000);
-    }
+            const cardDiv = document.createElement("div");
+            cardDiv.className = `card glow-${chosenRarity}`;
+            cardDiv.style.transform = `translateY(${i * 20}px)`; // Start stacked downward
 
-    function displayCard(card, rarity) {
-      const resultDiv = document.getElementById("result");
-      const cardDiv = document.createElement("div");
-      cardDiv.className = "card show";
+            const img = document.createElement("img");
+            img.src = cardImages[card] || "./images/default.png";
 
-      const glowClasses = {
-        common: "glow-common",
-        uncommon: "glow-uncommon",
-        rare: "glow-rare",
-        ultrarare: "glow-ultrarare",
-        secretrare: "glow-secretrare"
-      };
+            const rarityDiv = document.createElement("div");
+            rarityDiv.className = `rarity rarity-${chosenRarity}`;
+            rarityDiv.innerText = chosenRarity.replace('_', ' ').toUpperCase();
 
-      cardDiv.classList.add(glowClasses[rarity] || "");
+            const nameDiv = document.createElement("div");
+            nameDiv.className = `name name-${chosenRarity}`;
+            nameDiv.innerText = card;
 
-      const img = document.createElement("img");
-      img.src = cardImages[card] || "./images/default.png";
-      img.style.backgroundColor = "transparent";
+            cardDiv.appendChild(img);
+            cardDiv.appendChild(rarityDiv);
+            cardDiv.appendChild(nameDiv);
+            resultDiv.appendChild(cardDiv);
 
-      const rarityDiv = document.createElement("div");
-      rarityDiv.className = `rarity rarity-${rarity}`;
-      rarityDiv.innerText = rarity.replace('_', ' ').toUpperCase();
+            // Ensure the card is visible immediately for ultra rare and secret rare
+            cardDiv.style.opacity = "1";
 
-      const nameDiv = document.createElement("div");
-      nameDiv.className = `name name-${rarity}`;
-      nameDiv.innerText = card;
+            // Handle zoom for ultra rare and secret rare
+            if (chosenRarity === "ultrarare" || chosenRarity === "secretrare") {
+              cardDiv.classList.add("zoom");
 
-      cardDiv.appendChild(img);
-      cardDiv.appendChild(rarityDiv);
-      cardDiv.appendChild(nameDiv);
-      resultDiv.appendChild(cardDiv);
+              // Pause the process to showcase the card
+              setTimeout(() => {
+                cardDiv.style.transform = "scale(2) translateY(-50px)";
+                cardDiv.style.zIndex = "10";
+              }, 100);
+
+              // Reset the zoom and resume process
+              setTimeout(() => {
+                cardDiv.style.transform = `translateX(${i * 160}px) scale(1)`;
+                cardDiv.style.zIndex = "1";
+                cardDiv.classList.remove("zoom");
+              }, 3000); // Showcase the card for 3 seconds
+
+              delay += 3000; // Add delay for showcasing the card
+            }
+
+            // Add glowing border effect with less intensity
+            const glowColors = {
+              common: "rgba(128, 128, 128, 0.5)",
+              uncommon: "rgba(0, 128, 0, 0.5)",
+              rare: "rgba(0, 0, 255, 0.5)",
+              ultrarare: "rgba(128, 0, 128, 0.7)",
+              secretrare: "rgba(255, 215, 0, 0.7)"
+            };
+
+            if (glowColors[chosenRarity]) {
+              cardDiv.style.boxShadow = `0 0 15px 5px ${glowColors[chosenRarity]}`;
+              cardDiv.style.animation = `pulse-${chosenRarity} 2s infinite`;
+            }
+
+            // Pulse animations for each rarity
+            const style = document.createElement('style');
+            style.textContent = `
+              @keyframes pulse-common {
+                0%, 100% {
+                  box-shadow: 0 0 10px 3px rgba(128, 128, 128, 0.5);
+                }
+                50% {
+                  box-shadow: 0 0 15px 5px rgba(128, 128, 128, 0.7);
+                }
+              }
+              @keyframes pulse-uncommon {
+                0%, 100% {
+                  box-shadow: 0 0 10px 3px rgba(0, 128, 0, 0.5);
+                }
+                50% {
+                  box-shadow: 0 0 15px 5px rgba(0, 128, 0, 0.7);
+                }
+              }
+              @keyframes pulse-rare {
+                0%, 100% {
+                  box-shadow: 0 0 10px 3px rgba(0, 0, 255, 0.5);
+                }
+                50% {
+                  box-shadow: 0 0 15px 5px rgba(0, 0, 255, 0.7);
+                }
+              }
+              @keyframes pulse-ultrarare {
+                0%, 100% {
+                  box-shadow: 0 0 15px 5px rgba(128, 0, 128, 0.7);
+                }
+                50% {
+                  box-shadow: 0 0 20px 7px rgba(128, 0, 128, 1);
+                }
+              }
+              @keyframes pulse-secretrare {
+                0%, 100% {
+                  box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7);
+                }
+                50% {
+                  box-shadow: 0 0 20px 7px rgba(255, 215, 0, 1);
+                }
+              }
+            `;
+            document.head.appendChild(style);
+
+            setTimeout(() => {
+              cardDiv.classList.add("show");
+              cardDiv.style.transform = `translateX(${i * 160}px)`; // Move side by side
+            }, delay + 100);
+          }, delay + i * 1000); // Delay each card by 1000ms
+        }
+      }, 1000);
     }
   </script>
 </body>
