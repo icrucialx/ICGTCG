@@ -81,9 +81,10 @@
     #result {
       margin-top: 30px;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      transform: translateX(-160px); /* Moves the cards to the left */
     }
 
     .card {
@@ -218,7 +219,7 @@
   </style>
 </head>
 <body>
-  <h1>Cru TCG Gacha</h1>
+  <h1>ReCRUit</h1>
   <div id="summon-animation">
     <img src="./images/summon-circle.gif" alt="Summoning Animation" style="width: 200px;">
   </div>
@@ -308,10 +309,10 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      drawFiveCards();
+      drawThreeCards();
     });
 
-    function drawFiveCards() {
+    function drawThreeCards() {
       const summonAnimation = document.getElementById("summon-animation");
       summonAnimation.style.display = "block";
 
@@ -321,7 +322,7 @@
         resultDiv.innerHTML = ""; // Clear previous cards
 
         let delay = 0;
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 3; i++) {
           setTimeout(() => {
             const rarities = Object.keys(rarityWeights);
             const weights = Object.values(rarityWeights);
