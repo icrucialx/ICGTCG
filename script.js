@@ -1,133 +1,86 @@
-const express = require("express");
-const mysql = require("mysql2");
+const backendURL = "https://tcg-gacha-backend-xyz.a.run.app"; // Replace with your Cloud Run Backend URL
 
-const app = express();
-app.use(express.json());
+// Fetch all cards and display them
+function fetchAllCards() {
+  fetch(`${backendURL}/cards`)
+    .then(response => response.json())
+    .then(cards => {
+      console.log("Fetched cards:", cards);
 
-// Database connection
-const db = mysql.createConnection({
-    host: "34.45.122.137", // Replace with your Cloud SQL Public IP
-    user: "root",
-    password: "Saukaras12!",
-    database: "tcg_gacha"
-});
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = ""; // Clear previous content
 
-// Test the connection
-db.connect(err => {
-    if (err) {
-        console.error("Database connection error:", err);
-        return;
-    }
-    console.log("Connected to Cloud SQL!");
-});
+      cards.forEach(card => {
+        const cardDiv = document.createElement("div");
+        cardDiv.className = `card glow-${card.rarity}`; // Add rarity-specific styles
 
-// API: Fetch all cards
-app.get("/cards", (req, res) => {
-    db.query("SELECT * FROM Cards", (err, results) => {
-        if (err) {
-            res.status(500).send("Error fetching cards.");
-        } else {
-            res.json(results);
-        }
-    });
-});
+        const img = document.createElement("img");
+        img.src = `./images/${card.name.toLowerCase()}.png`; // Assuming image files are named after card names
+        img.alt = card.name;
 
-// API: Fetch cards by rarity
-app.get("/cards/:rarity", (req, res) => {
-    const { rarity } = req.params;
-    db.query("SELECT * FROM Cards WHERE rarity = ?", [rarity], (err, results) => {
-        if (err) {
-            res.status(500).send("Error fetching cards by rarity.");
-        } else {
-            res.json(results);
-        }
-    });
-});
+        const rarityDiv = document.createElement("div");
+        rarityDiv.className = `rarity rarity-${card.rarity}`;
+        rarityDiv.innerText = card.rarity.toUpperCase();
 
-// API: Fetch all users
-app.get("/users", (req, res) => {
-    db.query("SELECT * FROM Users", (err, results) => {
-        if (err) {
-            res.status(500).send("Error fetching users.");
-        } else {
-            res.json(results);
-        }
-    });
-});
+        const nameDiv = document.createElement("div");
+        nameDiv.className = `name name-${card.rarity}`;
+        nameDiv.innerText = card.name;
 
-// API: Add a new user
-app.post("/users", (req, res) => {
-    const { username, twitch_id } = req.body;
-    db.query(
-        "INSERT INTO Users (username, twitch_id) VALUES (?, ?)",
-        [username, twitch_id],
-        (err, results) => {
-            if (err) {
-                res.status(500).send("Error adding user.");
-            } else {
-                res.json({ id: results.insertId, username, twitch_id });
-            }
-        }
-    );
-});
-
-// API: Fetch pull history for a user
-app.get("/pulls/:userId", (req, res) => {
-    const { userId } = req.params;
-    db.query(
-        `SELECT Pulls.id, Pulls.pull_time, Cards.name AS card_name, Cards.rarity
-         FROM Pulls
-         JOIN Cards ON Pulls.card_id = Cards.id
-         WHERE Pulls.user_id = ?`,
-        [userId],
-        (err, results) => {
-            if (err) {
-                res.status(500).send("Error fetching pull history.");
-            } else {
-                res.json(results);
-            }
-        }
-    );
-});
-
-// API: Perform a gacha pull
-app.post("/pull", (req, res) => {
-    const userId = req.body.userId;
-    const rarity = determineRarity();
-
-    db.query(
-        "SELECT * FROM Cards WHERE rarity = ? ORDER BY RAND() LIMIT 1",
-        [rarity],
-        (err, results) => {
-            if (err || results.length === 0) {
-                res.status(500).send("Error performing pull.");
-            } else {
-                const card = results[0];
-                db.query(
-                    "INSERT INTO Pulls (user_id, card_id) VALUES (?, ?)",
-                    [userId, card.id],
-                    err => {
-                        if (err) {
-                            res.status(500).send("Error saving pull.");
-                        } else {
-                            res.json(card);
-                        }
-                    }
-                );
-            }
-        }
-    );
-});
-
-// Helper function for rarity
-function determineRarity() {
-    const rand = Math.random() * 100;
-    if (rand < 50) return "common";
-    if (rand < 80) return "uncommon";
-    if (rand < 95) return "rare";
-    if (rand < 99) return "ultrarare";
-    return "secretrare";
+        cardDiv.appendChild(img);
+        cardDiv.appendChild(rarityDiv);
+        cardDiv.appendChild(nameDiv);
+        resultDiv.appendChild(cardDiv);
+      });
+    })
+    .catch(error => console.error("Error fetching cards:", error));
 }
 
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Perform a gacha pull and display the pulled card
+function performGachaPull(userId) {
+  fetch(`${backendURL}/pull`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId })
+  })
+    .then(response => response.json())
+    .then(card => {
+      console.log("Pulled Card:", card);
+
+      // Create and display the pulled card
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = ""; // Clear previous content
+
+      const cardDiv = document.createElement("div");
+      cardDiv.className = `card glow-${card.rarity}`; // Add rarity-specific styles
+
+      const img = document.createElement("img");
+      img.src = `./images/${card.name.toLowerCase()}.png`; // Assuming image files are named after card names
+      img.alt = card.name;
+
+      const rarityDiv = document.createElement("div");
+      rarityDiv.className = `rarity rarity-${card.rarity}`;
+      rarityDiv.innerText = card.rarity.toUpperCase();
+
+      const nameDiv = document.createElement("div");
+      nameDiv.className = `name name-${card.rarity}`;
+      nameDiv.innerText = card.name;
+
+      cardDiv.appendChild(img);
+      cardDiv.appendChild(rarityDiv);
+      cardDiv.appendChild(nameDiv);
+      resultDiv.appendChild(cardDiv);
+    })
+    .catch(error => console.error("Error performing gacha pull:", error));
+}
+
+// Add event listeners for actions
+document.addEventListener("DOMContentLoaded", () => {
+  // Fetch and display all cards on page load
+  fetchAllCards();
+
+  // Add functionality to the gacha pull button
+  const pullButton = document.getElementById("pull-button");
+  pullButton.addEventListener("click", () => {
+    performGachaPull(1); // Replace with dynamic user ID if needed
+  });
+});
