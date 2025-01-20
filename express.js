@@ -2,12 +2,9 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Root route to check if the server is running
-app.get("/", (req, res) => {
-    res.send("TCG Gacha Backend is live and running!");
-});
+// Import card pool JSON
+const cardPool = require("./card_pool.json");
 
-// Other routes (e.g., /pull and /collection)
 app.get("/pull", async (req, res) => {
     const username = req.query.username;
 
@@ -16,8 +13,6 @@ app.get("/pull", async (req, res) => {
         return res.status(400).json({ error: "Username is required" });
     }
 
-    const cardPool = require("./card_pool.json");
-
     // Randomly select a rarity
     const rarities = Object.keys(cardPool); // ["common", "uncommon", "rare", "ultrarare", "secretrare"]
     const rarity = rarities[Math.floor(Math.random() * rarities.length)];
@@ -25,15 +20,14 @@ app.get("/pull", async (req, res) => {
     // Randomly select a card from the chosen rarity
     const card = cardPool[rarity][Math.floor(Math.random() * cardPool[rarity].length)];
 
-    // Example logic to save the pull (integrate this with your database or Google Sheets)
-    // await savePullToDatabase(username, card, rarity);
-
-    // Respond with the card and rarity
+    // Respond with a structured JSON object
     res.json({
-        success: true,
-        username: username,
-        card: card,
-        rarity: rarity
+        data: {
+            success: true,
+            username: username,
+            card: card,
+            rarity: rarity
+        }
     });
 });
 
@@ -57,3 +51,4 @@ app.get("/collection", async (req, res) => {
 });
 // Start the server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+});
