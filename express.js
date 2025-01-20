@@ -1,3 +1,10 @@
+const express = require("express");
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Import card pool JSON
+const cardPool = require("./card_pool.json");
+
 app.get("/pull", async (req, res) => {
     const username = req.query.username;
 
