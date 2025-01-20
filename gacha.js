@@ -2,7 +2,7 @@ const { google } = require("googleapis");
 const fs = require("fs");
 
 // Load service account credentials
-const credentials = JSON.parse(fs.readFileSync("icrucialtcg/dynamic-art-448221-j9-10b2bca3959d.json"));
+const credentials = JSON.parse(fs.readFileSync("icrucialtcg/credentials.json"));
 
 // Authenticate with Google Sheets API
 const auth = new google.auth.GoogleAuth({
