@@ -18,10 +18,12 @@ app.get("/pull", async (req, res) => {
     const card = cardPool[rarity][Math.floor(Math.random() * cardPool[rarity].length)];
 
     res.json({
-        success: true,
-        username: username,
-        card: card,
-        rarity: rarity
+        data: {
+            success: true,
+            username: username,
+            card: card,
+            rarity: rarity
+        }
     });
 });
 
