@@ -1,48 +1,38 @@
-const express = require("express");
+const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const path = require('path');
 
-// Import card pool JSON
-const cardPool = require("./card_pool.json");
+const cardPool = require('./card_pool.json'); // Load card data from JSON
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/pull', (req, res) => {
-    const username = req.query.username || 'Guest';
+    const pulls = [];
 
-    const cardPool = require('./card_pool.json');
-    const rarities = Object.keys(cardPool);
-
-    const pullRandomCard = () => {
-      const rarity = rarities[Math.floor(Math.random() * rarities.length)];
-      const card = cardPool[rarity][Math.floor(Math.random() * cardPool[rarity].length)];
-      return { card, rarity };
-    };
-
-    const pulls = [pullRandomCard(), pullRandomCard(), pullRandomCard()];
-
-    res.json({
-        success: true,
-        username: username,
-        pulls: pulls
-    });
-});
-
-app.get("/collection", async (req, res) => {
-    const username = req.query.username;
-
-    // Check if username is provided
-    if (!username) {
-        return res.status(400).json({ error: "Username is required" });
+    for (let i = 0; i < 3; i++) {
+        const rarity = weightedRandom(Object.keys(cardPool), [50, 30, 15, 4, 1]); // Adjust weights accordingly
+        const cardList = cardPool[rarity];
+        const card = cardList[Math.floor(Math.random() * cardList.length)];
+        pulls.push({ card, rarity });
     }
 
-    // Fetch user's collection from your database or Google Sheets
-    const collection = await fetchUserCollection(username); // Replace with your actual logic
-
-    // Respond with the user's collection
-    res.json({
-        success: true,
-        username: username,
-        collection: collection
-    });
+    res.json({ success: true, pulls });
 });
-// Start the server
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+function weightedRandom(items, weights) {
+    const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+    const random = Math.random() * totalWeight;
+    let cumulativeWeight = 0;
+
+    for (let i = 0; i < items.length; i++) {
+        cumulativeWeight += weights[i];
+        if (random < cumulativeWeight) {
+            return items[i];
+        }
+    }
+}
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
