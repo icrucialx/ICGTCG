@@ -1,0 +1,13 @@
+{
+  "name": "icrucialtcg",
+  "version": "1.0.0",
+  "description": "TCG Gacha System",
+  "main": "express.js",
+  "scripts": {
+    "start": "node express.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "googleapis": "^105.0.0"
+  }
+}
