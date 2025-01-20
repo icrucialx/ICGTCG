@@ -1,28 +1,22 @@
-const express = require("express");
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Import card pool JSON
-const cardPool = require("./card_pool.json");
-
 app.get("/pull", async (req, res) => {
     const username = req.query.username;
 
     if (!username) {
-        return res.status(400).json({ error: "Username is required" });
+        return res.status(400).send("Error: Username is required");
     }
 
+    // Import your card pool
     const cardPool = require("./card_pool.json");
+
+    // Select a random rarity
     const rarities = Object.keys(cardPool);
     const rarity = rarities[Math.floor(Math.random() * rarities.length)];
+
+    // Select a random card from the chosen rarity
     const card = cardPool[rarity][Math.floor(Math.random() * cardPool[rarity].length)];
 
-    res.json({
-        success: true,
-        username: username,
-        card: card,
-        rarity: rarity
-    });
+    // Return a preformatted plain text response
+    res.send(`@${username}, you pulled a card: ${card} (${rarity})!`);
 });
 
 app.get("/collection", async (req, res) => {
