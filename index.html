@@ -684,27 +684,14 @@ function playSound(id) {
   }
 }
 
-function drawThreeCards() {
-  const summonAnimation = document.getElementById("summon-animation");
+function fetchCardsFromServer() {
+    const summonAnimation = document.getElementById("summon-animation");
 
-  // Play summon animation sound
-  playSound("summon-sound");
-  summonAnimation.style.display = "block";
+    // Play summon animation sound
+    playSound("summon-sound");
+    summonAnimation.style.display = "block";
 
-  setTimeout(() => {
-    summonAnimation.style.display = "none";
-    const resultDiv = document.getElementById("result");
-    resultDiv.innerHTML = ""; // Clear previous cards
-
-    let delay = 0;
-    for (let i = 0; i < 3; i++) {
-      setTimeout(() => {
-        const rarities = Object.keys(rarityWeights);
-        const weights = Object.values(rarityWeights);
-        const chosenRarity = weightedRandom(rarities, weights);
-        const card = cardPool[chosenRarity][Math.floor(Math.random() * cardPool[chosenRarity].length)];
-
-        // Play sound based on rarity
+  // Play sound based on rarity
         playSound(`${chosenRarity}-sound`);
 
         const cardDiv = document.createElement("div");
@@ -764,14 +751,29 @@ function drawThreeCards() {
           cardDiv.style.animation = `pulse-${chosenRarity} 2s infinite`;
         }
 
-        setTimeout(() => {
-          cardDiv.classList.add("show");
-          cardDiv.style.transform = `translateX(${i * 160}px)`; // Move side by side
-        }, delay + 100);
-      }, delay + i * 1000); // Delay each card by 1000ms
-    }
-  }, 1000);
-}
+    setTimeout(() => {
+        fetch('/pull') // Adjust the URL if the server runs on a different port or domain
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    summonAnimation.style.display = "none";
+                    const resultDiv = document.getElementById("result");
+                    resultDiv.innerHTML = ""; // Clear previous cards
+
+                    data.pulls.forEach((pull, index) => {
+                        setTimeout(() => {
+                            displayCard(pull.card, pull.rarity, index);
+                        }, index * 1000);
+                    });
+                } else {
+                    console.error("Failed to pull cards:", data);
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching cards from server:", error);
+            });
+    }, 100
+
 
   </script>
 </body>
