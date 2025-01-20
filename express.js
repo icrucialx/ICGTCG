@@ -12,18 +12,22 @@ app.get("/pull", async (req, res) => {
         return res.status(400).send("Error: Username is required");
     }
 
-    // Import your card pool
     const cardPool = require("./card_pool.json");
-
-    // Select a random rarity
     const rarities = Object.keys(cardPool);
-    const rarity = rarities[Math.floor(Math.random() * rarities.length)];
 
-    // Select a random card from the chosen rarity
-    const card = cardPool[rarity][Math.floor(Math.random() * cardPool[rarity].length)];
+    // Function to pull a random card
+    const pullRandomCard = () => {
+        const rarity = rarities[Math.floor(Math.random() * rarities.length)];
+        const card = cardPool[rarity][Math.floor(Math.random() * cardPool[rarity].length)];
+        return { card, rarity };
+    };
 
-    // Return a preformatted plain text response
-    res.send(`@${username}, you pulled a card: ${card} (${rarity})!`);
+    // Pull three cards
+    const pulls = [pullRandomCard(), pullRandomCard(), pullRandomCard()];
+
+    // Format the response
+    const pullsFormatted = pulls.map(p => `${p.card} (${p.rarity})`).join(", ");
+    res.send(`@${username}, you pulled: ${pullsFormatted}`);
 });
 
 app.get("/collection", async (req, res) => {
