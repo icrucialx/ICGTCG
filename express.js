@@ -8,26 +8,20 @@ const cardPool = require("./card_pool.json");
 app.get("/pull", async (req, res) => {
     const username = req.query.username;
 
-    // Check if username is provided
     if (!username) {
         return res.status(400).json({ error: "Username is required" });
     }
 
-    // Randomly select a rarity
-    const rarities = Object.keys(cardPool); // ["common", "uncommon", "rare", "ultrarare", "secretrare"]
+    const cardPool = require("./card_pool.json");
+    const rarities = Object.keys(cardPool);
     const rarity = rarities[Math.floor(Math.random() * rarities.length)];
-
-    // Randomly select a card from the chosen rarity
     const card = cardPool[rarity][Math.floor(Math.random() * cardPool[rarity].length)];
 
-    // Respond with a structured JSON object
     res.json({
-        data: {
-            success: true,
-            username: username,
-            card: card,
-            rarity: rarity
-        }
+        success: true,
+        username: username,
+        card: card,
+        rarity: rarity
     });
 });
 
