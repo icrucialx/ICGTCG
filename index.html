@@ -94,64 +94,57 @@
     }
 
     function fetchCardsFromServer() {
-      const summonAnimation = document.getElementById("summon-animation");
-      playSound("summon-sound");
-      summonAnimation.style.display = "block";
+  const summonAnimation = document.getElementById("summon-animation");
+  summonAnimation.style.display = "block";
 
-      fetch('/pull')
-        .then(response => response.json())
-        .then(data => {
-          summonAnimation.style.display = "none";
-          const resultDiv = document.getElementById("result");
-          resultDiv.innerHTML = ""; // Clear previous results
+  fetch('/pull')
+    .then((response) => response.json())
+    .then((data) => {
+      summonAnimation.style.display = "none";
 
-          if (data.success) {
-            data.pulls.forEach((pull, index) => {
-              setTimeout(() => {
-                displayCard(pull.card, pull.rarity, index);
-              }, index * 1000);
-            });
-          } else {
-            console.error("Failed to pull cards:", data);
-          }
-        })
-        .catch(error => {
-          summonAnimation.style.display = "none";
-          console.error("Error fetching cards from server:", error);
-        });
-    }
+      if (data.success) {
+        displayCards(data.pulls);
+      } else {
+        console.error("Failed to retrieve cards:", data);
+      }
+    })
+    .catch((error) => {
+      summonAnimation.style.display = "none";
+      console.error("Error fetching cards:", error);
+    });
+}
 
-    function displayCard(cardName, rarity, index) {
-      const resultDiv = document.getElementById("result");
+function displayCards(cards) {
+  const resultDiv = document.getElementById('result');
+  resultDiv.innerHTML = ''; // Clear previous results
 
-      const cardDiv = document.createElement("div");
-      cardDiv.className = `card glow-${rarity}`;
-      cardDiv.style.animationDelay = `${index * 1000}ms`;
+  cards.forEach((card) => {
+    const cardDiv = document.createElement('div');
+    cardDiv.className = `card glow-${card.rarity}`;
 
-      const img = document.createElement("img");
-      img.src = `./images/${cardName.toLowerCase().replace(/\s/g, '_')}.png`;
-      img.alt = cardName;
-      img.onerror = () => {
-        img.src = "./images/default.png";
-      };
+    const img = document.createElement('img');
+    img.src = `./images/${card.card.toLowerCase().replace(/\s/g, '_')}.png`;
+    img.onerror = () => {
+      img.src = './images/default.png';
+    };
 
-      const rarityDiv = document.createElement("div");
-      rarityDiv.className = `rarity rarity-${rarity}`;
-      rarityDiv.innerText = rarity.toUpperCase();
+    const nameDiv = document.createElement('div');
+    nameDiv.className = 'card-name';
+    nameDiv.textContent = card.card;
 
-      const nameDiv = document.createElement("div");
-      nameDiv.className = "name";
-      nameDiv.innerText = cardName;
+    const rarityDiv = document.createElement('div');
+    rarityDiv.className = 'card-rarity';
+    rarityDiv.textContent = card.rarity.toUpperCase();
 
-      cardDiv.appendChild(img);
-      cardDiv.appendChild(rarityDiv);
-      cardDiv.appendChild(nameDiv);
-      resultDiv.appendChild(cardDiv);
+    cardDiv.appendChild(img);
+    cardDiv.appendChild(nameDiv);
+    cardDiv.appendChild(rarityDiv);
+    resultDiv.appendChild(cardDiv);
+  });
+}
 
-      playSound(`${rarity}-sound`);
-    }
+document.addEventListener('DOMContentLoaded', fetchCardsFromServer);
 
-    document.addEventListener("DOMContentLoaded", fetchCardsFromServer);
   </script>
 </body>
 </html>
