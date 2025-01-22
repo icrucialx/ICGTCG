@@ -784,6 +784,28 @@ function playSound(id) {
   }
 }
 
+
+async function logCardToSheet(cardData) {
+  const url = "https://script.google.com/macros/s/AKfycbzLI7aOQ3rEaOEg9g8t0qceUmehMnexQcGcO68CmdPnhqg7wIZglEtlPHoOYi7TrTfaHw/exec"; // Replace with the Web App URL from Apps Script
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(cardData),
+    });
+
+    const result = await response.json();
+    if (result.status === "success") {
+      console.log("Card data logged successfully:", cardData);
+    } else {
+      console.error("Failed to log card data:", result.message);
+    }
+  } catch (error) {
+    console.error("Error logging card data:", error.message);
+  }
+}
+    
 function drawCards() {
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = ""; // Clear previous cards
@@ -838,6 +860,14 @@ function drawCards() {
     cardInner.appendChild(cardFront);
     cardDiv.appendChild(cardInner);
     resultDiv.appendChild(cardDiv);
+
+    const cardData = {
+      date: new Date().toISOString().split("T")[0], // Current date
+      user: "Player1", // Replace with actual user info if available
+      card: cardName,
+      rarity: chosenRarity,
+    };
+    logCardToSheet(cardData);
 
     // Add show class to flip cards after a delay
     setTimeout(() => {
