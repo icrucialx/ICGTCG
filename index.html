@@ -760,17 +760,21 @@ const cardImages = {
     };
 
     // Function to send data to Google Sheets
-   async function logCardToSheet(cardData) {
-  const url = "https://script.google.com/macros/s/AKfycbwRd6ed1xdzbMXuDsyuTAF7vcNxM6Xxg7H77IeXXWoSy2s9AbXn6ukMu95uuzCe10SeoA/exec"; // Replace with your actual Web App URL
+  async function logCardToSheet(cardData) {
+  const url = "https://script.google.com/macros/s/AKfycbwRd6ed1xdzbMXuDsyuTAF7vcNxM6Xxg7H77IeXXWoSy2s9AbXn6ukMu95uuzCe10SeoA/exec";
 
   try {
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json", // Ensure proper headers
+        "Content-Type": "application/json", // Proper header
       },
-      body: JSON.stringify(cardData), // Ensure the data is sent as JSON
+      body: JSON.stringify(cardData), // Send data as JSON
     });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
 
     const result = await response.json();
     console.log("Response from Web App:", result);
