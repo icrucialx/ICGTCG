@@ -786,21 +786,17 @@ function playSound(id) {
 
 
 async function logCardToSheet(cardData) {
-  const url = "https://script.google.com/macros/s/AKfycbwRd6ed1xdzbMXuDsyuTAF7vcNxM6Xxg7H77IeXXWoSy2s9AbXn6ukMu95uuzCe10SeoA/exec"; // Replace with the Web App URL from Apps Script
+  const url = "https://script.google.com/macros/s/AKfycbwRd6ed1xdzbMXuDsyuTAF7vcNxM6Xxg7H77IeXXWoSy2s9AbXn6ukMu95uuzCe10SeoA/exec"; // Replace with your Web App URL
 
   try {
     const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(cardData),
+      body: JSON.stringify(cardData), // Properly formatted JSON body
     });
 
     const result = await response.json();
-    if (result.status === "success") {
-      console.log("Card data logged successfully:", cardData);
-    } else {
-      console.error("Failed to log card data:", result.message);
-    }
+    console.log("Response from Web App:", result);
   } catch (error) {
     console.error("Error logging card data:", error.message);
   }
