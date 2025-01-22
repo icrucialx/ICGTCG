@@ -750,7 +750,7 @@ const cardImages = {
   "Gold Tapu Bulu": "./images/gold_tapu_bulu.png",
   "Gold Tapu Fini": "./images/gold_tapu_fini.png",
 };
-
+    
     const rarityWeights = {
       common: 50,
       uncommon: 30,
@@ -759,6 +759,30 @@ const cardImages = {
       secretrare: 1
     };
 
+    // Function to send data to Google Sheets
+    async function logCardToSheet(cardData) {
+      const url = "https://script.google.com/macros/s/AKfycbwRd6ed1xdzbMXuDsyuTAF7vcNxM6Xxg7H77IeXXWoSy2s9AbXn6ukMu95uuzCe10SeoA/exec";
+
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(cardData)
+        });
+
+        const result = await response.json();
+        console.log("Response from Web App:", result);
+
+        if (result.status === "success") {
+          console.log("Card data logged successfully!");
+        } else {
+          console.error("Failed to log card data:", result.message);
+        }
+      } catch (error) {
+        console.error("Error logging card data:", error.message);
+      }
+    }
+    
     function weightedRandom(items, weights) {
       const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
       const random = Math.random() * totalWeight;
@@ -781,24 +805,6 @@ function playSound(id) {
   if (audio) {
     audio.currentTime = 0; // Reset the audio to the start
     audio.play();
-  }
-}
-
-
-async function logCardToSheet(cardData) {
-  const url = "https://script.google.com/macros/s/AKfycbwRd6ed1xdzbMXuDsyuTAF7vcNxM6Xxg7H77IeXXWoSy2s9AbXn6ukMu95uuzCe10SeoA/exec"; // Replace with your Web App URL
-
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(cardData), // Properly formatted JSON body
-    });
-
-    const result = await response.json();
-    console.log("Response from Web App:", result);
-  } catch (error) {
-    console.error("Error logging card data:", error.message);
   }
 }
     
@@ -857,13 +863,15 @@ function drawCards() {
     cardDiv.appendChild(cardInner);
     resultDiv.appendChild(cardDiv);
 
-    const cardData = {
-      date: new Date().toISOString().split("T")[0], // Current date
-      user: "Player1", // Replace with actual user info if available
-      card: cardName,
-      rarity: chosenRarity,
-    };
-    logCardToSheet(cardData);
+        const cardData = {
+          date: new Date().toISOString().split("T")[0], // Current date
+          user: "Player1", // Replace with actual user info if available
+          card: cardName,
+          rarity: chosenRarity
+        };
+
+        // Log to Google Sheets
+        logCardToSheet(cardData);
 
     // Add show class to flip cards after a delay
     setTimeout(() => {
