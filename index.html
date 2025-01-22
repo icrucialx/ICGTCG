@@ -767,7 +767,7 @@ const cardImages = {
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json", // Ensure proper headers
+        "Content": "application/json", // Ensure proper headers
       },
       body: JSON.stringify(cardData), // Ensure the data is sent as JSON
     });
