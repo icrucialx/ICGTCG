@@ -740,6 +740,9 @@ function drawCards() {
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = ""; // Clear previous cards
 
+  // Play summon sound before drawing cards
+  playSound("summon-sound");
+
   for (let i = 0; i < 3; i++) {
     const rarities = Object.keys(rarityWeights);
     const weights = Object.values(rarityWeights);
@@ -790,6 +793,10 @@ function drawCards() {
     cardInner.appendChild(cardFront);
     cardDiv.appendChild(cardInner);
     resultDiv.appendChild(cardDiv);
+
+    // Play rarity sound immediately after card is drawn
+    const soundId = `${chosenRarity}-sound`;
+    playSound(soundId);
 
     // Add show class to flip cards after a delay
     setTimeout(() => {
