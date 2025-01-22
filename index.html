@@ -760,28 +760,31 @@ const cardImages = {
     };
 
     // Function to send data to Google Sheets
-    async function logCardToSheet(cardData) {
-      const url = "https://script.google.com/macros/s/AKfycbwRd6ed1xdzbMXuDsyuTAF7vcNxM6Xxg7H77IeXXWoSy2s9AbXn6ukMu95uuzCe10SeoA/exec";
+   async function logCardToSheet(cardData) {
+  const url = "https://script.google.com/macros/s/AKfycbwRd6ed1xdzbMXuDsyuTAF7vcNxM6Xxg7H77IeXXWoSy2s9AbXn6ukMu95uuzCe10SeoA/exec"; // Replace with your actual Web App URL
 
-      try {
-        const response = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(cardData)
-        });
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json", // Ensure proper headers
+      },
+      body: JSON.stringify(cardData), // Ensure the data is sent as JSON
+    });
 
-        const result = await response.json();
-        console.log("Response from Web App:", result);
+    const result = await response.json();
+    console.log("Response from Web App:", result);
 
-        if (result.status === "success") {
-          console.log("Card data logged successfully!");
-        } else {
-          console.error("Failed to log card data:", result.message);
-        }
-      } catch (error) {
-        console.error("Error logging card data:", error.message);
-      }
+    if (result.status === "success") {
+      console.log("Card data logged successfully!");
+    } else {
+      console.error("Failed to log card data:", result.message);
     }
+  } catch (error) {
+    console.error("Error logging card data:", error.message);
+  }
+}
+
     
     function weightedRandom(items, weights) {
       const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
