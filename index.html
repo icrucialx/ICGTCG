@@ -758,43 +758,32 @@ const cardImages = {
       ultrarare: 4,
       secretrare: 1
     };
-
-
-const cardData = {
-  date: new Date().toISOString().split("T")[0], // Current date
-  user: "Player1", // Replace with actual user info if available
-  card: cardName,
-  rarity: chosenRarity,
-};
-
-console.log("Card Data to Log:", cardData); // Debugging log
-logCardToSheet(cardData);
     
     // Function to send data to Google Sheets
-async function logCardToSheet(cardData) {
-  const url = "https://script.google.com/macros/s/AKfycbwRd6ed1xdzbMXuDsyuTAF7vcNxM6Xxg7H77IeXXWoSy2s9AbXn6ukMu95uuzCe10SeoA/exec";
+    async function logCardToSheet(cardData) {
+      const url = "https://script.google.com/macros/s/AKfycbwRd6ed1xdzbMXuDsyuTAF7vcNxM6Xxg7H77IeXXWoSy2s9AbXn6ukMu95uuzCe10SeoA/exec";
 
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json", // Correct header key
-      },
-      body: JSON.stringify(cardData), // Ensure the data is sent as JSON
-    });
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(cardData),
+        });
 
-    const result = await response.json();
-    console.log("Response from Web App:", result);
+        const result = await response.json();
+        console.log("Response from Web App:", result);
 
-    if (result.status === "success") {
-      console.log("Card data logged successfully!");
-    } else {
-      console.error("Failed to log card data:", result.message);
+        if (result.status === "success") {
+          console.log("Card data logged successfully!");
+        } else {
+          console.error("Failed to log card data:", result.message);
+        }
+      } catch (error) {
+        console.error("Error logging card data:", error.message);
+      }
     }
-  } catch (error) {
-    console.error("Error logging card data:", error.message);
-  }
-}
 
 
     
@@ -877,6 +866,16 @@ function drawCards() {
     cardInner.appendChild(cardFront);
     cardDiv.appendChild(cardInner);
     resultDiv.appendChild(cardDiv);
+
+    const cardData = {
+      date: new Date().toISOString().split("T")[0], // Current date
+      user: "Player1", // Replace with actual user info if available
+      card: cardName,
+      rarity: chosenRarity,
+    };
+
+    console.log("Card Data to Log:", cardData); // Debugging log
+    logCardToSheet(cardData);
 
     // Add show class to flip cards after a delay
     setTimeout(() => {
