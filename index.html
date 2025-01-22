@@ -766,9 +766,7 @@ const cardImages = {
       try {
         const response = await fetch(url, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(cardData),
         });
 
@@ -785,8 +783,6 @@ const cardImages = {
       }
     }
 
-
-    
     function weightedRandom(items, weights) {
       const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
       const random = Math.random() * totalWeight;
@@ -800,100 +796,59 @@ const cardImages = {
       }
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      drawThreeCards();
-    });
+    function drawCards() {
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = ""; // Clear previous cards
 
-function playSound(id) {
-  const audio = document.getElementById(id);
-  if (audio) {
-    audio.currentTime = 0; // Reset the audio to the start
-    audio.play();
-  }
-}
-    
-function drawCards() {
-  const resultDiv = document.getElementById("result");
-  resultDiv.innerHTML = ""; // Clear previous cards
+      for (let i = 0; i < 3; i++) {
+        const rarities = Object.keys(rarityWeights);
+        const weights = Object.values(rarityWeights);
+        const chosenRarity = weightedRandom(rarities, weights);
+        const cardName = cardPool[chosenRarity][Math.floor(Math.random() * cardPool[chosenRarity].length)];
 
-  for (let i = 0; i < 3; i++) {
-    const rarities = Object.keys(rarityWeights);
-    const weights = Object.values(rarityWeights);
-    const chosenRarity = weightedRandom(rarities, weights);
-    const cardName = cardPool[chosenRarity][Math.floor(Math.random() * cardPool[chosenRarity].length)];
+        // Create card container
+        const cardDiv = document.createElement("div");
+        cardDiv.className = `card glow-${chosenRarity}`;
 
-    // Create card container
-    const cardDiv = document.createElement("div");
-    cardDiv.className = `card glow-${chosenRarity}`; // Apply glow class dynamically
+        const img = document.createElement("img");
+        img.src = cardImages[cardName] || "./images/default.png";
 
-    // Add glistening and sparkling effects for specific rarities
-    if (chosenRarity === "ultrarare" || chosenRarity === "secretrare") {
-      cardDiv.classList.add("sparkle-effect");
-    } else if (chosenRarity === "rare") {
-      cardDiv.classList.add("glisten-effect");
+        const rarityDiv = document.createElement("div");
+        rarityDiv.className = "rarity";
+        rarityDiv.innerText = chosenRarity.toUpperCase();
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "name";
+        nameDiv.innerText = cardName;
+
+        cardDiv.appendChild(img);
+        cardDiv.appendChild(rarityDiv);
+        cardDiv.appendChild(nameDiv);
+        resultDiv.appendChild(cardDiv);
+
+        // Log card data to Google Sheets
+        const cardData = {
+          date: new Date().toISOString().split("T")[0],
+          user: "Player1",
+          card: cardName,
+          rarity: chosenRarity,
+        };
+        console.log("Card Data to Log:", cardData);
+        logCardToSheet(cardData);
+
+        // Add show class for animation after a delay
+        setTimeout(() => {
+          cardDiv.classList.add("show");
+          if (chosenRarity === "ultrarare" || chosenRarity === "secretrare") {
+            setTimeout(() => {
+              cardDiv.classList.add("zoom");
+            }, 1000);
+          }
+        }, i * 1500);
+      }
     }
 
-    // Create card inner container
-    const cardInner = document.createElement("div");
-    cardInner.className = "card-inner";
-
-    // Create card back
-    const cardBack = document.createElement("div");
-    cardBack.className = "card-back";
-    cardBack.innerHTML = "<p></p>";
-
-    // Create card front
-    const cardFront = document.createElement("div");
-    cardFront.className = "card-front";
-
-    const img = document.createElement("img");
-    img.src = cardImages[cardName] || "./images/default.png";
-
-    const rarityDiv = document.createElement("div");
-    rarityDiv.className = "rarity";
-    rarityDiv.innerText = chosenRarity.toUpperCase();
-
-    const nameDiv = document.createElement("div");
-    nameDiv.className = "name";
-    nameDiv.innerText = cardName;
-
-    // Append elements
-    cardFront.appendChild(img);
-    cardFront.appendChild(rarityDiv);
-    cardFront.appendChild(nameDiv);
-
-    cardInner.appendChild(cardBack);
-    cardInner.appendChild(cardFront);
-    cardDiv.appendChild(cardInner);
-    resultDiv.appendChild(cardDiv);
-
-    const cardData = {
-      date: new Date().toISOString().split("T")[0], // Current date
-      user: "Player1", // Replace with actual user info if available
-      card: cardName,
-      rarity: chosenRarity,
-    };
-
-    console.log("Card Data to Log:", cardData); // Debugging log
-    logCardToSheet(cardData);
-  }
-}
-
-    // Add show class to flip cards after a delay
-    setTimeout(() => {
-      cardDiv.classList.add("show");
-      if (chosenRarity === "ultrarare" || chosenRarity === "secretrare") {
-        setTimeout(() => {
-          cardDiv.classList.add("zoom");
-        }, 1000); // Zoom in after reveal
-      }
-    }, i * 1500); // Delay each flip
-  }
-}
-
-
-document.addEventListener("DOMContentLoaded", drawCards);
-
+    document.addEventListener("DOMContentLoaded", drawCards);
   </script>
 </body>
 </html>
