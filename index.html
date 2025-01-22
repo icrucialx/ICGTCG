@@ -759,15 +759,26 @@ const cardImages = {
       secretrare: 1
     };
 
+
+const cardData = {
+  date: new Date().toISOString().split("T")[0], // Current date
+  user: "Player1", // Replace with actual user info if available
+  card: cardName,
+  rarity: chosenRarity,
+};
+
+console.log("Card Data to Log:", cardData); // Debugging log
+logCardToSheet(cardData);
+    
     // Function to send data to Google Sheets
-   async function logCardToSheet(cardData) {
-  const url = "https://script.google.com/macros/s/AKfycbwRd6ed1xdzbMXuDsyuTAF7vcNxM6Xxg7H77IeXXWoSy2s9AbXn6ukMu95uuzCe10SeoA/exec"; // Replace with your actual Web App URL
+async function logCardToSheet(cardData) {
+  const url = "https://script.google.com/macros/s/AKfycbwRd6ed1xdzbMXuDsyuTAF7vcNxM6Xxg7H77IeXXWoSy2s9AbXn6ukMu95uuzCe10SeoA/exec";
 
   try {
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        "Content": "application/json", // Ensure proper headers
+        "Content-Type": "application/json", // Correct header key
       },
       body: JSON.stringify(cardData), // Ensure the data is sent as JSON
     });
@@ -784,6 +795,7 @@ const cardImages = {
     console.error("Error logging card data:", error.message);
   }
 }
+
 
     
     function weightedRandom(items, weights) {
@@ -865,16 +877,6 @@ function drawCards() {
     cardInner.appendChild(cardFront);
     cardDiv.appendChild(cardInner);
     resultDiv.appendChild(cardDiv);
-
-        const cardData = {
-          date: new Date().toISOString().split("T")[0], // Current date
-          user: "Player1", // Replace with actual user info if available
-          card: cardName,
-          rarity: chosenRarity
-        };
-
-        // Log to Google Sheets
-        logCardToSheet(cardData);
 
     // Add show class to flip cards after a delay
     setTimeout(() => {
