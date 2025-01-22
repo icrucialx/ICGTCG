@@ -728,13 +728,15 @@ const cardImages = {
       drawThreeCards();
     });
 
-function playSound(id) {
-  const audio = document.getElementById(id);
-  if (audio) {
-    audio.currentTime = 0; // Reset the audio to the start
-    audio.play();
-  }
-}
+    function playSound(id) {
+      const audio = document.getElementById(id);
+      if (audio) {
+        audio.currentTime = 0; // Reset the audio to the start
+        audio.play().catch((err) => {
+          console.error(`Error playing sound for ID: ${id}`, err);
+        });
+      }
+    }
 
 function drawCards() {
   const resultDiv = document.getElementById("result");
@@ -794,9 +796,10 @@ function drawCards() {
     cardDiv.appendChild(cardInner);
     resultDiv.appendChild(cardDiv);
 
-    // Play rarity sound immediately after card is drawn
-    const soundId = `${chosenRarity}-sound`;
-    playSound(soundId);
+        // Play rarity sound after drawing card
+        setTimeout(() => {
+          playSound(`${chosenRarity}-sound`);
+        }, i * 1500);
 
     // Add show class to flip cards after a delay
     setTimeout(() => {
