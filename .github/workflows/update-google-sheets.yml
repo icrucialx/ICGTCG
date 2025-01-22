@@ -1,0 +1,85 @@
+name: Update Google Sheets
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-google-sheets:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+
+    - name: Install Dependencies
+      run: npm install googleapis @google/auth
+
+    - name: Update Google Sheets
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+      run: |
+        node <<EOF
+        const { google } = require('googleapis');
+const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
+
+const auth = new google.auth.GoogleAuth({
+  credentials,
+  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+});
+
+const sheets = google.sheets({ version: 'v4', auth });
+
+async function updateSheet() {
+  const spreadsheetId = 'YOUR_SPREADSHEET_ID';
+  
+  // Example gacha pull data
+  const gachaResults = [
+    { date: '2025-01-22', user: 'User123', card: 'Card A', rarity: 'Rare' },
+    { date: '2025-01-22', user: 'User456', card: 'Card B', rarity: 'Ultra Rare' },
+  ];
+
+  const values = gachaResults.map(result => [
+    result.date,
+    result.user,
+    result.card,
+    result.rarity,
+  ]);
+
+  // Append data to the sheet
+  await sheets.spreadsheets.batchUpdate({
+  spreadsheetId,
+  resource: {
+    requests: [
+      {
+        repeatCell: {
+          range: {
+            sheetId: 0, // ID of the sheet (find via API or set to 0 for the first sheet)
+            startRowIndex: 0,
+            endRowIndex: 1, // Header row
+          },
+          cell: {
+            userEnteredFormat: {
+              textFormat: {
+                bold: true,
+              },
+            },
+          },
+          fields: 'userEnteredFormat.textFormat.bold',
+        },
+      },
+    ],
+  },
+});
+
+  console.log('Google Sheet Updated!');
+}
+
+updateSheet().catch(console.error);
+        EOF
