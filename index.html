@@ -5,139 +5,123 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cru TCG Gacha</title>
   <style>
+  
     @keyframes rainbow {
-      0% { color: red; }
-      16% { color: orange; }
-      33% { color: yellow; }
-      50% { color: green; }
-      66% { color: blue; }
-      83% { color: indigo; }
-      100% { color: violet; }
-    }
+  0% { color: red; }
+  16% { color: orange; }
+  33% { color: yellow; }
+  50% { color: green; }
+  66% { color: blue; }
+  83% { color: indigo; }
+  100% { color: violet; }
+}
 
-    @keyframes glow {
-      0% { text-shadow: 0 0 5px red, 0 0 10px orange, 0 0 20px yellow, 0 0 30px green, 0 0 40px blue, 0 0 50px indigo, 0 0 60px violet; }
-      100% { text-shadow: 0 0 5px violet, 0 0 10px indigo, 0 0 20px blue, 0 0 30px green, 0 0 40px yellow, 0 0 50px orange, 0 0 60px red; }
-    }
+@keyframes glow {
+  0% { text-shadow: 0 0 5px red, 0 0 10px orange, 0 0 20px yellow, 0 0 30px green, 0 0 40px blue, 0 0 50px indigo, 0 0 60px violet; }
+  100% { text-shadow: 0 0 5px violet, 0 0 10px indigo, 0 0 20px blue, 0 0 30px green, 0 0 40px yellow, 0 0 50px orange, 0 0 60px red; }
+}
 
-    @keyframes glisten {
-      0%, 100% { opacity: 0.9; filter: brightness(1); }
-      50% { opacity: 1; filter: brightness(1.15); }
-    }
+@keyframes glisten-animation {
+  0% { transform: translate(-150%, -150%) rotate(25deg); }
+  100% { transform: translate(150%, 150%) rotate(25deg); }
+}
 
-    @keyframes sparkle {
-      0% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
-      50% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
-      100% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
-    }
+@keyframes sparkle-animation {
+  0%, 100% { background-position: 50% 50%; opacity: 0.8; transform: scale(1); }
+  50% { background-position: 75% 75%; opacity: 1; transform: scale(1.1); }
+}
 
-    @keyframes flip {
-      0% {
-        transform: rotateY(0deg);
-      }
-      50% {
-        transform: rotateY(90deg);
-      }
-      100% {
-        transform: rotateY(180deg);
-      }
-    }
+@keyframes zoomIn {
+  0% {
+    transform: scale(1);
+    z-index: 1;
+  }
+  50% {
+    transform: scale(2.25);
+    z-index: 10;
+  }
+  100% {
+    transform: scale(1);
+    z-index: 1;
+  }
+}
 
-    @keyframes zoomIn {
-      0% {
-        transform: scale(1);
-        z-index: 1;
-      }
-      50% {
-        transform: scale(1.5);
-        z-index: 10;
-      }
-      100% {
-        transform: scale(1);
-        z-index: 1;
-      }
-    }
-	
-	@keyframes shimmer {
-      0% {
-        background-position: -200%;
-      }
-      100% {
-        background-position: 200%;
-      }
-    }
+@keyframes shimmer {
+  0% { background-position: -200%; }
+  100% { background-position: 200%; }
+}
 
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-      background: transparent;
-      color: white;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 
-    h1 {
-      margin-bottom: 20px;
-      font-size: 3em;
-      animation: rainbow 5s infinite, glow 5s infinite;
-    }
+h1 {
+  margin-bottom: 20px;
+  font-size: 3em;
+  animation: rainbow 5s infinite, glow 5s infinite;
+}
 
-    #result {
-      margin-top: 30px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-    }
+#result {
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
 
-    .card {
-      perspective: 1000px;
-      width: 250px;
-      height: 350px;
-      position: relative;
-      display: inline-block;
-      margin: 10px;
-      border: none; /* Hide border initially */
-      transition: border-color 0.5s ease, transform 1s ease;
-    }
-	
-	.card.show {
-      border: 3px solid; /* Reveal border on flip */
-    }
+.card {
+  perspective: 1000px;
+  width: 250px;
+  height: 350px;
+  position: relative;
+  display: inline-block;
+  margin: 10px;
+  border: none; /* Hide border initially */
+  transition: border-color 0.5s ease, transform 1s ease;
+  overflow: hidden;
+}
 
-    .card-inner {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transform-style: preserve-3d;
-      transition: transform 1s ease-in-out;
-      transform: rotateY(180deg);
-    }
+.card.show {
+  border: 3px solid; /* Reveal border on flip */
+}
 
-    .card-inner {
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 1s ease-in-out;
+  transform: rotateY(180deg);
+}
+
+.card-inner {
   transform: rotateY(0deg); /* Starts with the back side visible */
 }
+
 .card.show .card-inner {
   transform: rotateY(180deg); /* Flips to reveal the front */
 }
 
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 10px;
+}
 
-    .card-front,
-    .card-back {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    .card-back {
+.card-back {
   background-image: url('./images/card-back.png');
   background-size: cover;
   background-position: center;
@@ -147,69 +131,142 @@
   transform: rotateY(0deg);
 }
 
+.card-front {
+  background-color: white;
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
 
-    .card-front {
-      background-color: white;
-      transform: rotateY(180deg);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-    }
+.card-front img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px 10px 0 0;
+}
 
-    .card-front img {
-      width: 100%;
-      height: auto;
-      border-radius: 10px 10px 0 0;
-    }
+.rarity {
+  margin: 10px 0;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+}
 
-    .rarity {
-      margin: 10px 0;
-      font-size: 16px;
-      font-weight: bold;
-      text-align: center;
-    }
+.name {
+  font-size: 14px;
+  text-align: center;
+  font-weight: bold;
+}
 
-    .name {
-      font-size: 14px;
-      text-align: center;
-      font-weight: bold;
-    }
-	
-	.card.glow-common {
-      border: 2px solid gray;
-      box-shadow: 0 0 10px rgba(128, 128, 128, 0.5);
-    }
+@keyframes borderPulse {
+  0% {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
+  }
+}
 
-    .card.glow-uncommon {
-      border: 2px solid green;
-      box-shadow: 0 0 15px rgba(0, 128, 0, 0.5);
-    }
+/* Common Cards */
+.card.glow-common {
+  border: 2px solid gray;
+  animation: borderPulse 3s infinite ease-in-out;
+  box-shadow: 0 0 10px rgba(128, 128, 128, 0.5);
+}
 
-    .card.glow-rare {
-      border: 2px solid blue;
-      box-shadow: 0 0 20px rgba(0, 0, 255, 0.5);
-    }
+/* Uncommon Cards */
+.card.glow-uncommon {
+  border: 2px solid green;
+  animation: borderPulse 3s infinite ease-in-out;
+  box-shadow: 0 0 15px rgba(0, 128, 0, 0.5);
+}
 
-    .card.glow-ultrarare {
-      border: 3px solid;
-      animation: rainbow 3s infinite, shimmer 3s infinite;
-      box-shadow: 0 0 30px rgba(128, 0, 128, 0.7), 0 0 50px rgba(128, 0, 128, 0.5);
-      background: linear-gradient(45deg, #ff9, #f09, #90f);
-      background-size: 400%;
-    }
+/* Rare Cards */
+.card.glow-rare {
+  border: 2px solid blue;
+  animation: borderPulse 3s infinite ease-in-out;
+  box-shadow: 0 0 20px rgba(0, 0, 255, 0.5);
+  position: relative;
+  overflow: hidden;
+}
 
-    .card.glow-secretrare {
-      border: 3px solid;
-      animation: rainbow 3s infinite, shimmer 3s infinite;
-      box-shadow: 0 0 40px rgba(255, 215, 0, 0.7), 0 0 60px rgba(255, 215, 0, 0.5);
-      background: linear-gradient(45deg, #fff8b5, #ffe39f, #ffdfa8);
-      background-size: 400%;
-    }
-	
-	.card.zoom {
-      animation: zoomIn 1.5s forwards;
-    }
+.card.glow-rare:before {
+  content: "";
+  position: absolute;
+  top: -150%;
+  left: -150%;
+  width: 300%;
+  height: 300%;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.4) 100%
+  );
+  transform: rotate(25deg);
+  opacity: 0.7;
+  pointer-events: none;
+  animation: glisten-animation 3s infinite linear;
+}
+
+/* Ultra Rare Cards */
+.card.glow-ultrarare {
+  border: 3px solid purple;
+  animation: borderPulse 3s infinite ease-in-out, shimmer 3s infinite;
+  box-shadow: 0 0 30px rgba(128, 0, 128, 0.7), 0 0 50px rgba(128, 0, 128, 0.5);
+  background: linear-gradient(45deg, #ff9, #f09, #90f);
+  background-size: 400%;
+  position: relative;
+  overflow: hidden;
+}
+
+.card.glow-ultrarare:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.7) 10%, rgba(255, 255, 255, 0) 70%);
+  opacity: 0.8;
+  pointer-events: none;
+  animation: sparkle-animation 1.5s infinite ease-in-out;
+}
+
+/* Secret Rare Cards */
+.card.glow-secretrare {
+  border: 3px solid gold;
+  animation: borderPulse 3s infinite ease-in-out, shimmer 3s infinite;
+  box-shadow: 0 0 40px rgba(255, 215, 0, 0.7), 0 0 60px rgba(255, 215, 0, 0.5);
+  background: linear-gradient(45deg, #fff8b5, #ffe39f, #ffdfa8);
+  background-size: 400%;
+  position: relative;
+  overflow: hidden;
+}
+
+.card.glow-secretrare:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 10%, rgba(255, 255, 255, 0) 70%);
+  opacity: 0.9;
+  pointer-events: none;
+  animation: sparkle-animation 1.5s infinite ease-in-out;
+}
+
+/* Zoom Effect */
+.card.zoom {
+  animation: zoomIn 3.5s forwards;
+}
+
+
   </style>
 </head>
 <body>
@@ -271,11 +328,11 @@ const cardPool = {
     "Gyarados", "Clefable", "Poliwrath", "Vileplume", "Victreebel", "Tentacruel", 
     "Rapidash", "Hypno", "Chansey", "Electabuzz", "Magmar", "Jynx", "Pinsir", 
     "Scyther", "Starmie", "Kingler", "Electrode", "Exeggutor", "Marowak", 
-    "Weezing", "Hitmonchan", "Hitmonlee", "Lickitung", "Snorlax", "Ditto", 
+    "Weezing", "Hitmonchan", "Hitmonlee", "Snorlax", "Ditto", 
     "Aerodactyl", "Kabutops", "Omastar", "Articuno", "Zapdos", "Moltres", 
     "Typhlosion", "Feraligatr", "Meganium", "Ampharos", "Espeon", "Umbreon", 
     "Steelix", "Crobat", "Forretress", "Houndoom", "Kingdra", "Blissey", 
-    "Scizor", "Heracross", "Tyranitar", "Lugia", "Ho-Oh", "Raikou", "Entei", 
+    "Scizor", "Heracross", "Tyranitar", "Lugia", "HoOh", "Raikou", "Entei", 
     "Suicune", "Sceptile", "Blaziken", "Swampert", "Metagross", "Salamence", 
     "Flygon", "Walrein", "Claydol", "Milotic", "Altaria", "Gardevoir", "Absol", 
     "Regirock", "Regice", "Registeel", "Latias", "Latios", "Jirachi", "Deoxys", 
@@ -283,16 +340,23 @@ const cardPool = {
     "Bastiodon", "Drapion", "Togekiss", "Magnezone", "Rhyperior", "Electivire", 
     "Magmortar", "Gallade", "Yanmega", "Gliscor", "Mamoswine"
   ],
-  ultrarare: [
-    "Shiny Charizard GX", "Rainbow Pikachu", "Mega Lucario",
-    "Shiny Umbreon", "Shiny Gyarados", "Primal Kyogre",
-    "Shiny Rayquaza", "Shiny Metagross", "Shiny Tyranitar",
-    "Shiny Greninja"
-  ],
-  secretrare: [
-    "Gold Mewtwo", "Alternate Art Lugia", "Gold Zacian", "Rainbow Eternatus",
-    "Gold Reshiram", "Rainbow Zekrom", "Gold Dialga", "Gold Palkia", "Gold Giratina", "Gold Arceus"
-  ]
+ultrarare: [
+  "Shiny Charizard GX", "Rainbow Pikachu", "Mega Lucario",
+  "Shiny Umbreon", "Shiny Gyarados", "Primal Kyogre",
+  "Shiny Rayquaza", "Shiny Metagross", "Shiny Tyranitar",
+  "Shiny Greninja", "Shiny Eevee", "Shiny Mew",
+  "Shiny Hooh", "Shiny Lugia", "Shiny Latios",
+  "Shiny Latias", "Shiny Celebi", "Shiny Jirachi",
+  "Shiny Zygarde", "Shiny Reshiram", "Shiny Zekrom"
+],
+secretrare: [
+  "Gold Mewtwo", "Alternate Art Lugia", "Gold Zacian", "Rainbow Eternatus",
+  "Gold Reshiram", "Rainbow Zekrom", "Gold Dialga", "Gold Palkia", "Gold Giratina", "Gold Arceus",
+  "Gold Kyogre", "Gold Groudon", "Gold Rayquaza", "Rainbow Charizard", 
+  "Gold Solgaleo", "Gold Lunala", "Gold Necrozma", "Rainbow Blastoise",
+  "Rainbow Venusaur", "Gold Eternatus", "Rainbow Kyurem", "Gold Xerneas",
+  "Gold Yveltal", "Gold Tapu Koko", "Gold Tapu Lele", "Gold Tapu Bulu", "Gold Tapu Fini"
+],
 };
 
 const cardImages = {
@@ -463,6 +527,35 @@ const cardImages = {
   Monferno: "./images/monferno.png",
   Prinplup: "./images/prinplup.png",
   Grotle: "./images/grotle.png",
+  Bibarel: "./images/bibarel.png",
+  Pachirisu: "./images/pachirisu.png",
+  Drifloon: "./images/drifloon.png",
+  Mismagius: "./images/mismagius.png",
+  Honchkrow: "./images/honchkrow.png",
+  Hippopotas: "./images/hippopotas.png",
+  Skunktank: "./images/skunktank.png",
+  Finneon: "./images/finneon.png",
+  Mantyke: "./images/mantyke.png",
+  Snover: "./images/snover.png",
+  Gabite: "./images/gabite.png",
+  Froslass: "./images/froslass.png",
+  Servine: "./images/servine.png",
+  Dewott: "./images/dewott.png",
+  Pignite: "./images/pignite.png",
+  Tranquill: "./images/tranquill.png",
+  Watchog: "./images/watchog.png",
+  Boldore: "./images/boldore.png",
+  Swoobat: "./images/swoobat.png",
+  Zebstrika: "./images/zebstrika.png",
+  Palpitoad: "./images/palpitoad.png",
+  Whirlipede: "./images/whirlipede.png",
+  Swadloon: "./images/swadloon.png",
+  Whimsicott: "./images/whimsicott.png",
+  Petilil: "./images/petilil.png",
+  Lilligant: "./images/lilligant.png",
+  Krokorok: "./images/krokorok.png",
+  Maractus: "./images/maractus.png",
+  Zoroark: "./images/zoroark.png",
 
   // Rare Pokémon
   Charizard: "./images/charizard.png",
@@ -494,6 +587,72 @@ const cardImages = {
   Starmie: "./images/starmie.png",
   Kingler: "./images/kingler.png",
   Electrode: "./images/electrode.png",
+  Weezing: "./images/weezing.png",
+  Hitmonchan: "./images/hitmonchan.png",
+  Hitmonlee: "./images/hitmonlee.png",
+  Snorlax: "./images/snorlax.png",
+  Ditto: "./images/ditto.png",
+  Aerodactyl: "./images/aerodactyl.png",
+  Kabutops: "./images/kabutops.png",
+  Omastar: "./images/omastar.png",
+  Articuno: "./images/articuno.png",
+  Zapdos: "./images/zapdos.png",
+  Moltres: "./images/moltres.png",
+  Typhlosion: "./images/typhlosion.png",
+  Feraligatr: "./images/feraligatr.png",
+  Meganium: "./images/meganium.png",
+  Ampharos: "./images/ampharos.png",
+  Espeon: "./images/espeon.png",
+  Umbreon: "./images/umbreon.png",
+  Steelix: "./images/steelix.png",
+  Crobat: "./images/crobat.png",
+  Forretress: "./images/forretress.png",
+  Houndoom: "./images/houndoom.png",
+  Kingdra: "./images/kingdra.png",
+  Blissey: "./images/blissey.png",
+  Scizor: "./images/scizor.png",
+  Heracross: "./images/heracross.png",
+  Tyranitar: "./images/tyranitar.png",
+  Lugia: "./images/lugia.png",
+  Hooh: "./images/hooh.png",
+  Raikou: "./images/raikou.png",
+  Entei: "./images/entei.png",
+  Suicune: "./images/suicune.png",
+  Sceptile: "./images/sceptile.png",
+  Blaziken: "./images/blaziken.png",
+  Swampert: "./images/swampert.png",
+  Metagross: "./images/metagross.png",
+  Salamence: "./images/salamence.png",
+  Flygon: "./images/flygon.png",
+  Walrein: "./images/walrein.png",
+  Claydol: "./images/claydol.png",
+  Milotic: "./images/milotic.png",
+  Altaria: "./images/altaria.png",
+  Gardevoir: "./images/gardevoir.png",
+  Absol: "./images/absol.png",
+  Regirock: "./images/regirock.png",
+  Regice: "./images/regice.png",
+  Registeel: "./images/registeel.png",
+  Latias: "./images/latias.png",
+  Latios: "./images/latios.png",
+  Jirachi: "./images/jirachi.png",
+  Deoxys: "./images/deoxys.png",
+  Torterra: "./images/torterra.png",
+  Infernape: "./images/infernape.png",
+  Empoleon: "./images/empoleon.png",
+  Roserade: "./images/roserade.png",
+  Luxray: "./images/luxray.png",
+  Rampardos: "./images/rampardos.png",
+  Bastiodan: "./images/bastiodan.png",
+  Drapion: "./images/drapion.png",
+  Togekiss: "./images/togekiss.png",
+  Magnezone: "./images/magnezone.png",
+  Rhyperior: "./images/rhyperior.png",
+  Electivire: "./images/electivire.png",
+  Magmortar: "./images/magmortar.png",
+  Yanmega: "./images/yanmega.png",
+  Gliscor: "./images/gliscor.png",
+  Mamoswine: "./images/mamoswine.png",
 
   // Ultra Rare and Secret Rare (unchanged)
   "Shiny Charizard GX": "./images/shiny_charizard_gx.png",
@@ -506,6 +665,17 @@ const cardImages = {
   "Shiny Metagross": "./images/shiny_metagross.png",
   "Shiny Tyranitar": "./images/shiny_tyranitar.png",
   "Shiny Greninja": "./images/shiny_greninja.png",
+  "Shiny Eevee": "./images/shiny_eevee.png",
+  "Shiny Mew": "./images/shiny_mew.png",
+  "Shiny Hooh": "./images/shiny_hooh.png",
+  "Shiny Lugia": "./images/shiny_lugia.png",
+  "Shiny Latios": "./images/shiny_latios.png",
+  "Shiny Latias": "./images/shiny_latias.png",
+  "Shiny Celebi": "./images/shiny_celebi.png",
+  "Shiny Jirachi": "./images/shiny_jirachi.png",
+  "Shiny Zygarde": "./images/shiny_zygarde.png",
+  "Shiny Reshiram": "./images/shiny_reshiram.png",
+  "Shiny Zekrom": "./images/shiny_zekrom.png",
   "Gold Mewtwo": "./images/gold_mewtwo.png",
   "Alternate Art Lugia": "./images/alternate_art_lugia.png",
   "Gold Zacian": "./images/gold_zacian.png",
@@ -515,7 +685,22 @@ const cardImages = {
   "Gold Dialga": "./images/gold_dialga.png",
   "Gold Palkia": "./images/gold_palkia.png",
   "Gold Giratina": "./images/gold_giratina.png",
-  "Gold Arceus": "./images/gold_arceus.png"
+  "Gold Arceus": "./images/gold_arceus.png",
+  "Gold Rayquaza": "./images/gold_rayquaza.png",
+  "Rainbow Charizard": "./images/rainbow_charizard.png",
+  "Gold Solgaleo": "./images/gold_solgaleo.png",
+  "Rainbow Lunala": "./images/rainbow_lunala.png",
+  "Gold Necrozma": "./images/gold_necrozma.png",
+  "Rainbow Blastoise": "./images/rainbow_blastoise.png",
+  "Rainbow Venusaur": "./images/rainbow_venusaur.png",
+  "Gold Eternatus": "./images/gold_eternatus.png",
+  "Rainbow Kyurem": "./images/rainbow_kyurem.png",
+  "Gold Xerneas": "./images/gold_xerneas.png",
+  "Gold Yveltal": "./images/gold_yveltal.png",
+  "Gold Tapu Koko": "./images/gold_tapu_koko.png",
+  "Gold Tapu Lele": "./images/gold_tapu_lele.png",
+  "Gold Tapu Bulu": "./images/gold_tapu_bulu.png",
+  "Gold Tapu Fini": "./images/gold_tapu_fini.png",
 };
 
     const rarityWeights = {
@@ -553,7 +738,7 @@ function playSound(id) {
 
 function drawCards() {
   const resultDiv = document.getElementById("result");
-  resultDiv.innerHTML = "";
+  resultDiv.innerHTML = ""; // Clear previous cards
 
   for (let i = 0; i < 3; i++) {
     const rarities = Object.keys(rarityWeights);
@@ -564,6 +749,13 @@ function drawCards() {
     // Create card container
     const cardDiv = document.createElement("div");
     cardDiv.className = `card glow-${chosenRarity}`; // Apply glow class dynamically
+
+    // Add glistening and sparkling effects for specific rarities
+    if (chosenRarity === "ultrarare" || chosenRarity === "secretrare") {
+      cardDiv.classList.add("sparkle-effect");
+    } else if (chosenRarity === "rare") {
+      cardDiv.classList.add("glisten-effect");
+    }
 
     // Create card inner container
     const cardInner = document.createElement("div");
@@ -601,17 +793,19 @@ function drawCards() {
 
     // Add show class to flip cards after a delay
     setTimeout(() => {
-          cardDiv.classList.add("show");
-          if (chosenRarity === "ultrarare" || chosenRarity === "secretrare") {
-            setTimeout(() => {
-              cardDiv.classList.add("zoom");
-            }, 1000); // Zoom in after reveal
-          }
-        }, i * 1500); // Delay each flip
+      cardDiv.classList.add("show");
+      if (chosenRarity === "ultrarare" || chosenRarity === "secretrare") {
+        setTimeout(() => {
+          cardDiv.classList.add("zoom");
+        }, 1000); // Zoom in after reveal
       }
-    }
+    }, i * 1500); // Delay each flip
+  }
+}
+
 
 document.addEventListener("DOMContentLoaded", drawCards);
+
   </script>
 </body>
 </html>
