@@ -27,59 +27,43 @@ jobs:
       run: |
         node <<EOF
         const { google } = require('googleapis');
-const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
 
-const auth = new google.auth.GoogleAuth({
-  credentials,
-  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-});
+        const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
 
-const sheets = google.sheets({ version: 'v4', auth });
+        const auth = new google.auth.GoogleAuth({
+          credentials,
+          scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+        });
 
-async function updateSheet() {
-  const spreadsheetId = 'YOUR_SPREADSHEET_ID';
-  
-  // Example gacha pull data
-  const gachaResults = [
-    { date: '2025-01-22', user: 'User123', card: 'Card A', rarity: 'Rare' },
-    { date: '2025-01-22', user: 'User456', card: 'Card B', rarity: 'Ultra Rare' },
-  ];
+        const sheets = google.sheets({ version: 'v4', auth });
 
-  const values = gachaResults.map(result => [
-    result.date,
-    result.user,
-    result.card,
-    result.rarity,
-  ]);
+        async function updateSheet() {
+          const spreadsheetId = '10QhDmqimECd8sRPNMOTAvTXU_-lHG3to1mWx-qx9xNU';
 
-  // Append data to the sheet
-  await sheets.spreadsheets.batchUpdate({
-  spreadsheetId,
-  resource: {
-    requests: [
-      {
-        repeatCell: {
-          range: {
-            sheetId: 0, // ID of the sheet (find via API or set to 0 for the first sheet)
-            startRowIndex: 0,
-            endRowIndex: 1, // Header row
-          },
-          cell: {
-            userEnteredFormat: {
-              textFormat: {
-                bold: true,
-              },
-            },
-          },
-          fields: 'userEnteredFormat.textFormat.bold',
-        },
-      },
-    ],
-  },
-});
+          // Example gacha pull data
+          const gachaResults = [
+            { date: '2025-01-22', user: 'User123', card: 'Card A', rarity: 'Rare' },
+            { date: '2025-01-22', user: 'User456', card: 'Card B', rarity: 'Ultra Rare' },
+          ];
 
-  console.log('Google Sheet Updated!');
-}
+          const values = gachaResults.map(result => [
+            result.date,
+            result.user,
+            result.card,
+            result.rarity,
+          ]);
 
-updateSheet().catch(console.error);
+          // Append data to the sheet
+          await sheets.spreadsheets.values.append({
+            spreadsheetId,
+            range: 'Sheet1',
+            valueInputOption: 'RAW',
+            insertDataOption: 'INSERT_ROWS',
+            resource: { values },
+          });
+
+          console.log('Google Sheet Updated!');
+        }
+
+        updateSheet().catch(console.error);
         EOF
