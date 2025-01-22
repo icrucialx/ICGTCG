@@ -19,7 +19,7 @@ jobs:
         node-version: '16'
 
     - name: Install Dependencies
-      run: npm install googleapis @google/auth
+      run: npm install googleapis google-auth-library
 
     - name: Update Google Sheets
       env:
@@ -27,7 +27,6 @@ jobs:
       run: |
         node <<EOF
         const { google } = require('googleapis');
-
         const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
 
         const auth = new google.auth.GoogleAuth({
@@ -38,9 +37,8 @@ jobs:
         const sheets = google.sheets({ version: 'v4', auth });
 
         async function updateSheet() {
-          const spreadsheetId = '10QhDmqimECd8sRPNMOTAvTXU_-lHG3to1mWx-qx9xNU';
+          const spreadsheetId = 'YOUR_SPREADSHEET_ID';
 
-          // Example gacha pull data
           const gachaResults = [
             { date: '2025-01-22', user: 'User123', card: 'Card A', rarity: 'Rare' },
             { date: '2025-01-22', user: 'User456', card: 'Card B', rarity: 'Ultra Rare' },
@@ -53,7 +51,6 @@ jobs:
             result.rarity,
           ]);
 
-          // Append data to the sheet
           await sheets.spreadsheets.values.append({
             spreadsheetId,
             range: 'Sheet1',
