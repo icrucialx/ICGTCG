@@ -37,7 +37,7 @@ jobs:
         const sheets = google.sheets({ version: 'v4', auth });
 
         async function updateSheet() {
-          const spreadsheetId = 'YOUR_SPREADSHEET_ID';
+          const spreadsheetId = '10QhDmqimECd8sRPNMOTAvTXU_-lHG3to1mWx-qx9xNU';
 
           const gachaResults = [
             { date: '2025-01-22', user: 'User123', card: 'Card A', rarity: 'Rare' },
