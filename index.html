@@ -710,7 +710,7 @@ const cardImages = {
 
     const cardsUrl = "https://raw.githubusercontent.com/icrucialx/tcg-gacha-database/main/cards.json";
     const backendUrl = "https://icrucialtcg.onrender.com";
-
+    const userId = 'user123'; // Replace with dynamic user authentication later
     
     const rarityWeights = {
       common: 50,
@@ -859,7 +859,6 @@ async function fetchRarityDistribution() {
         });
       }
     }
-const userId = 'user123'; // Replace with dynamic user authentication later
 
 async function handlePull(cardName, rarity) {
     await logPull(userId, cardName, rarity);
