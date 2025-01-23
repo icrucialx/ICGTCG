@@ -759,18 +759,17 @@ const cardImages = {
             body: JSON.stringify(payload),
         });
 
-        if (!response.ok) {
-            const errorResponse = await response.json();
-            console.error("Server responded with an error:", errorResponse);
-        }
+        const result = await response.json(); // Parse JSON once
 
-        const result = await response.json();
-        console.log('Logged pull:', result);
+        if (!response.ok) {
+            console.error("Server responded with an error:", result); // Use the parsed result
+        } else {
+            console.log('Logged pull:', result);
+        }
     } catch (error) {
         console.error('Error logging pull:', error);
     }
 }
-
     async function recordPull(cardName, rarity) {
     await fetch('https://icrucialtcg.onrender.com/pulls', {
         method: 'POST',
