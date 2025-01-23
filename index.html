@@ -757,6 +757,25 @@ const cardImages = {
         body: JSON.stringify({ card_name: cardName, rarity: rarity }),
     });
 }
+
+    async function fetchUserCollection(userId) {
+    try {
+        const response = await fetch(`${backendUrl}/collection/${userId}`);
+        const collection = await response.json();
+
+        const collectionDiv = document.getElementById('user-collection');
+        collectionDiv.innerHTML = '<h2>Your Collection</h2>';
+
+        collection.forEach(card => {
+            const cardDiv = document.createElement('div');
+            cardDiv.textContent = `Card: ${card.card_name}, Rarity: ${card.rarity}`;
+            collectionDiv.appendChild(cardDiv);
+        });
+    } catch (error) {
+        console.error('Error fetching collection:', error);
+    }
+}
+
     
     function weightedRandom(items, weights) {
       const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
