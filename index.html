@@ -716,20 +716,22 @@ const cardImages = {
       secretrare: 1
     };
 
-    async function fetchCardPool() {
-  try {
-    const response = await fetch(cardsUrl);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch cards: ${response.status}`);
-    }
-    const cardPool = await response.json();
-    console.log("Card Pool Loaded:", cardPool);
-    return cardPool;
-  } catch (error) {
-    console.error("Error loading card pool:", error);
-  }
+    async function fetchCards() {
+    const response = await fetch('https://raw.githubusercontent.com/icrucialx/tcg-gacha-database/main/cards.json');
+    const cards = await response.json();
 }
 
+
+    async function recordPull(cardName, rarity) {
+    await fetch('https://your-backend-url/pulls', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ card_name: cardName, rarity: rarity }),
+    });
+}
+    
     function weightedRandom(items, weights) {
       const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
       const random = Math.random() * totalWeight;
