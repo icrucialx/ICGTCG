@@ -728,18 +728,21 @@ const cardImages = {
     }
 }
 
-    async function logPull(cardName, rarity) {
+    async function fetchLoggedPulls() {
     try {
-        console.log("Attempting to log pull:", cardName, rarity); // Debug input
-        const response = await fetch(`${backendUrl}/pulls`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ card_name: cardName, rarity: rarity }),
+        const response = await fetch(`${backendUrl}/pulls`);
+        const pulls = await response.json();
+
+        const pullsDiv = document.getElementById("logged-pulls");
+        pullsDiv.innerHTML = "<h2>Logged Pulls</h2>";
+
+        pulls.forEach(pull => {
+            const pullDiv = document.createElement("div");
+            pullDiv.textContent = `Card: ${pull.card_name}, Rarity: ${pull.rarity}, Date: ${pull.date_of_pull}`;
+            pullsDiv.appendChild(pullDiv);
         });
-        const result = await response.json();
-        console.log("Logged pull:", JSON.stringify(result, null, 2)); // Display the full object
     } catch (error) {
-        console.error("Error logging pull:", error);
+        console.error("Error fetching logged pulls:", error);
     }
 }
 
