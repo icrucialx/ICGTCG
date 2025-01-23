@@ -743,7 +743,7 @@ const cardImages = {
 }
 
     async function recordPull(cardName, rarity) {
-    await fetch('https://your-backend-url/pulls', {
+    await fetch('https://icrucialtcg.onrender.com/pulls', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -786,11 +786,16 @@ function drawCards() {
   // Play summon sound before drawing cards
   playSound("summon-sound");
 
+  const pulledCards = []; // Store pulled cards for logging
+
   for (let i = 0; i < 3; i++) {
     const rarities = Object.keys(rarityWeights);
     const weights = Object.values(rarityWeights);
     const chosenRarity = weightedRandom(rarities, weights);
-    const cardName = cardPool[chosenRarity][Math.floor(Math.random() * cardPool[chosenRarity].length)];
+    const cardName =
+      cardPool[chosenRarity][
+        Math.floor(Math.random() * cardPool[chosenRarity].length)
+      ];
 
     // Create card container
     const cardDiv = document.createElement("div");
@@ -837,10 +842,13 @@ function drawCards() {
     cardDiv.appendChild(cardInner);
     resultDiv.appendChild(cardDiv);
 
-        // Play rarity sound after drawing card
-        setTimeout(() => {
-          playSound(`${chosenRarity}-sound`);
-        }, i * 1500);
+    // Store pulled card for logging
+    pulledCards.push({ card_name: cardName, rarity: chosenRarity });
+
+    // Play rarity sound after drawing card
+    setTimeout(() => {
+      playSound(`${chosenRarity}-sound`);
+    }, i * 1500);
 
     // Add show class to flip cards after a delay
     setTimeout(() => {
@@ -852,11 +860,13 @@ function drawCards() {
       }
     }, i * 1500); // Delay each flip
   }
+
+  // Log all pulled cards to the backend
+  pulledCards.forEach(async (card) => {
+    await logPull(card.card_name, card.rarity);
+  });
 }
 
-    await logPull(pulledCard.card_name, pulledCard.rarity);
-}
-    
 document.addEventListener("DOMContentLoaded", drawCards);
 
   </script>
