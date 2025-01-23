@@ -87,6 +87,7 @@ h1 {
   display: inline-block;
   margin: 10px;
   border: none; /* Hide border initially */
+  box-shadow: none;
   transition: border-color 0.5s ease, transform 1s ease;
   overflow: hidden;
 }
@@ -172,21 +173,21 @@ h1 {
 }
 
 /* Common Cards */
-.card.glow-common {
+.card.show.glow-common {
   border: 2px solid gray;
   animation: borderPulse 3s infinite ease-in-out;
   box-shadow: 0 0 10px rgba(128, 128, 128, 0.5);
 }
 
 /* Uncommon Cards */
-.card.glow-uncommon {
+.card.show.glow-uncommon {
   border: 2px solid green;
   animation: borderPulse 3s infinite ease-in-out;
   box-shadow: 0 0 15px rgba(0, 128, 0, 0.5);
 }
 
 /* Rare Cards */
-.card.glow-rare {
+.card.show.glow-rare {
   border: 2px solid blue;
   animation: borderPulse 3s infinite ease-in-out;
   box-shadow: 0 0 20px rgba(0, 0, 255, 0.5);
@@ -194,7 +195,7 @@ h1 {
   overflow: hidden;
 }
 
-.card.glow-rare:before {
+.card.show.glow-rare:before {
   content: "";
   position: absolute;
   top: -150%;
@@ -214,7 +215,7 @@ h1 {
 }
 
 /* Ultra Rare Cards */
-.card.glow-ultrarare {
+.card.show.glow-ultrarare {
   border: 3px solid purple;
   animation: borderPulse 3s infinite ease-in-out, shimmer 3s infinite;
   box-shadow: 0 0 30px rgba(128, 0, 128, 0.7), 0 0 50px rgba(128, 0, 128, 0.5);
@@ -224,7 +225,7 @@ h1 {
   overflow: hidden;
 }
 
-.card.glow-ultrarare:after {
+.card.show.glow-ultrarare:after {
   content: "";
   position: absolute;
   top: 0;
@@ -238,7 +239,7 @@ h1 {
 }
 
 /* Secret Rare Cards */
-.card.glow-secretrare {
+.card.show.glow-secretrare {
   border: 3px solid gold;
   animation: borderPulse 3s infinite ease-in-out, shimmer 3s infinite;
   box-shadow: 0 0 40px rgba(255, 215, 0, 0.7), 0 0 60px rgba(255, 215, 0, 0.5);
@@ -248,7 +249,7 @@ h1 {
   overflow: hidden;
 }
 
-.card.glow-secretrare:after {
+.card.show.glow-secretrare:after {
   content: "";
   position: absolute;
   top: 0;
