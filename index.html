@@ -948,9 +948,9 @@ function drawCards() {
   }
 
   // Log all pulled cards to the backend
-  pulledCards.forEach(async (card) => {
-    await logPull(card.card_name, card.rarity);
-  });
+pulledCards.forEach(async (card) => {
+    await logPull(userId, card.card_name, card.rarity);
+});
 }
 
 document.addEventListener("DOMContentLoaded", drawCards);
