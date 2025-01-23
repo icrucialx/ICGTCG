@@ -748,6 +748,20 @@ const cardImages = {
     }
 }
 
+    async function logPull(userId, cardName, rarity) {
+    try {
+        const response = await fetch(`${backendUrl}/pulls`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, card_name: cardName, rarity: rarity }),
+        });
+        const result = await response.json();
+        console.log('Logged pull:', result);
+    } catch (error) {
+        console.error('Error logging pull:', error);
+    }
+}
+
     async function recordPull(cardName, rarity) {
     await fetch('https://icrucialtcg.onrender.com/pulls', {
         method: 'POST',
@@ -803,7 +817,13 @@ const cardImages = {
         });
       }
     }
+const userId = 'user123'; // Replace with dynamic user authentication later
 
+async function handlePull(cardName, rarity) {
+    await logPull(userId, cardName, rarity);
+    await fetchUserCollection(userId);
+}
+    
 function drawCards() {
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = ""; // Clear previous cards
