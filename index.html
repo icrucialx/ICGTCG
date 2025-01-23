@@ -704,6 +704,10 @@ const cardImages = {
   "Gold Tapu Fini": "./images/gold_tapu_fini.png",
 };
 
+
+    const cardsUrl = "https://raw.githubusercontent.com/icrucialx/tcg-gacha-database/main/cards.json";
+
+    
     const rarityWeights = {
       common: 50,
       uncommon: 30,
@@ -711,6 +715,20 @@ const cardImages = {
       ultrarare: 4,
       secretrare: 1
     };
+
+    async function fetchCardPool() {
+  try {
+    const response = await fetch(cardsUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch cards: ${response.status}`);
+    }
+    const cardPool = await response.json();
+    console.log("Card Pool Loaded:", cardPool);
+    return cardPool;
+  } catch (error) {
+    console.error("Error loading card pool:", error);
+  }
+}
 
     function weightedRandom(items, weights) {
       const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
