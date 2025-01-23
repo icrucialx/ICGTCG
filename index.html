@@ -790,6 +790,39 @@ const cardImages = {
     }
 }
 
+    async function fetchTopCards() {
+    try {
+        const response = await fetch(`${backendUrl}/analytics/top-cards`);
+        const topCards = await response.json();
+        const topCardsDiv = document.getElementById('top-cards');
+        topCardsDiv.innerHTML = '<h2>Top Pulled Cards</h2>';
+
+        topCards.forEach(card => {
+            const cardDiv = document.createElement('div');
+            cardDiv.textContent = `Card: ${card.card_name}, Pulls: ${card.pulls}`;
+            topCardsDiv.appendChild(cardDiv);
+        });
+    } catch (error) {
+        console.error('Error fetching top cards:', error);
+    }
+}
+
+async function fetchRarityDistribution() {
+    try {
+        const response = await fetch(`${backendUrl}/analytics/rarity-distribution`);
+        const distribution = await response.json();
+        const rarityDiv = document.getElementById('rarity-distribution');
+        rarityDiv.innerHTML = '<h2>Rarity Distribution</h2>';
+
+        distribution.forEach(rarity => {
+            const rarityDivChild = document.createElement('div');
+            rarityDivChild.textContent = `Rarity: ${rarity.rarity}, Pulls: ${rarity.pulls}`;
+            rarityDiv.appendChild(rarityDivChild);
+        });
+    } catch (error) {
+        console.error('Error fetching rarity distribution:', error);
+    }
+}
     
     function weightedRandom(items, weights) {
       const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
@@ -917,5 +950,9 @@ document.addEventListener("DOMContentLoaded", drawCards);
   </script>
   <button onclick="fetchUserCollection('user123')">Show My Collection</button>
 <div id="user-collection"></div>
+  <div id="top-cards"></div>
+<div id="rarity-distribution"></div>
+<button onclick="fetchTopCards()">Show Top Cards</button>
+<button onclick="fetchRarityDistribution()">Show Rarity Distribution</button>
 </body>
 </html>
