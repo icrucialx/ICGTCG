@@ -730,13 +730,14 @@ const cardImages = {
 
     async function logPull(cardName, rarity) {
     try {
+        console.log("Attempting to log pull:", cardName, rarity); // Debug input
         const response = await fetch(`${backendUrl}/pulls`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ card_name: cardName, rarity: rarity }),
         });
         const result = await response.json();
-        console.log("Logged pull:", result);
+        console.log("Logged pull:", JSON.stringify(result, null, 2)); // Display the full object
     } catch (error) {
         console.error("Error logging pull:", error);
     }
