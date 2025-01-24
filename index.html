@@ -743,8 +743,8 @@ const cardImages = {
     const urlParams = new URLSearchParams(window.location.search);
     const userId = urlParams.get('user'); // Twitch username
 
-    const clientId = 'YOUR_TWITCH_CLIENT_ID'; // Replace with your Twitch Client ID
-const redirectUri = 'https://your-frontend-url.com'; // Replace with your frontend URL
+    const clientId = 'b62ohp0g2myh67rwyqhdrhlj6g2adh'; // Replace with your Twitch Client ID
+const redirectUri = 'https://icrucialx.github.io/icrucialtcg/'; // Replace with your frontend URL
 
 document.getElementById('twitch-login').addEventListener('click', () => {
     const oauthUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=user:read:email`;
