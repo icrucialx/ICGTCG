@@ -737,7 +737,6 @@ const cardImages = {
   "Gold Tapu Fini": "./images/gold_tapu_fini.png",
 };
 
-
     const cardsUrl = "https://raw.githubusercontent.com/icrucialx/tcg-gacha-database/main/cards.json";
     const backendUrl = "https://icrucialtcg.onrender.com";
     const urlParams = new URLSearchParams(window.location.search);
@@ -775,7 +774,6 @@ async function fetchTwitchUser() {
     console.error('Failed to fetch Twitch user data');
   }
 }
- 
     
     const rarityWeights = {
       common: 50,
@@ -1107,7 +1105,15 @@ function drawCards(userId) {
 }
 
 // Trigger fetching Twitch user on page load
-window.onload = fetchTwitchUser;
+
+window.onload = async () => {
+  await fetchTwitchUser(); // Fetch user data
+  if (window.twitchUserId) {
+    drawCards(window.twitchUserId); // Call drawCards only if Twitch user ID exists
+  } else {
+    console.error("Twitch User ID is missing. Ensure the user is logged in.");
+  }
+};
     
   </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
