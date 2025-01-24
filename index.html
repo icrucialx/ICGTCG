@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<button id="twitch-login">Login with Twitch</button> 
 <button onclick="fetchLoggedPulls()">Show Logged Pulls</button>
 <div id="logged-pulls"></div>
 <head>
@@ -740,6 +741,42 @@ const cardImages = {
     const cardsUrl = "https://raw.githubusercontent.com/icrucialx/tcg-gacha-database/main/cards.json";
     const backendUrl = "https://icrucialtcg.onrender.com";
     const userId = 'user123'; // Replace with dynamic user authentication later
+
+    const clientId = 'YOUR_TWITCH_CLIENT_ID'; // Replace with your Twitch Client ID
+const redirectUri = 'https://your-frontend-url.com'; // Replace with your frontend URL
+
+document.getElementById('twitch-login').addEventListener('click', () => {
+    const oauthUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=user:read:email`;
+    window.location.href = oauthUrl; // Redirect user to Twitch login
+});
+
+// Extract the token from the URL after redirect
+function getAccessToken() {
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+    return params.get('access_token');
+}
+
+// Fetch Twitch user data
+async function fetchTwitchUser() {
+    const token = getAccessToken();
+    if (!token) return;
+
+    const response = await fetch('https://api.twitch.tv/helix/users', {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Client-Id': clientId
+        }
+    });
+
+    const data = await response.json();
+    const user = data.data[0]; // Twitch user object
+    console.log('Twitch User:', user);
+
+    // Use user.id as the dynamic user_id for your backend
+    await fetchUserCollection(user.id);
+}
+ 
     
     const rarityWeights = {
       common: 50,
@@ -1064,6 +1101,7 @@ pulledCards.forEach(async (card) => {
 });
 }
 
+window.onload = fetchTwitchUser;   
 document.addEventListener("DOMContentLoaded", drawCards);
 
   </script>
