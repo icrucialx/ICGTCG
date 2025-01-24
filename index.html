@@ -838,7 +838,7 @@ async function fetchTwitchUser() {
     }
 }
 
-    async function logPull(userId, cardName, rarity) {
+   async function logPull(userId, cardName, rarity) {
     try {
         const payload = { user_id: userId, card_name: cardName, rarity: rarity };
         console.log("Payload being sent to backend:", payload);
@@ -849,10 +849,10 @@ async function fetchTwitchUser() {
             body: JSON.stringify(payload),
         });
 
-        const result = await response.json(); // Parse JSON once
+        const result = await response.json();
 
         if (!response.ok) {
-            console.error("Server responded with an error:", result); // Use the parsed result
+            console.error("Server responded with an error:", result);
         } else {
             console.log('Logged pull:', result);
         }
@@ -1014,9 +1014,12 @@ async function handlePull(cardName, rarity) {
     await fetchUserCollection(userId);
 }
     
-function drawCards() {
-  const resultDiv = document.getElementById("result");
-  resultDiv.innerHTML = ""; // Clear previous cards
+async function drawCards() {
+    const userId = window.twitchUserId; // Retrieve Twitch user ID from global scope
+    if (!userId) {
+        console.error('Twitch user ID not available');
+        return;
+    }
 
   // Play summon sound before drawing cards
   playSound("summon-sound");
