@@ -1014,7 +1014,7 @@ async function handlePull(cardName, rarity) {
     await fetchUserCollection(userId);
 }
     
-async function drawCards() {
+    function drawCards() {
     const userId = window.twitchUserId; // Retrieve Twitch user ID from global scope
     if (!userId) {
         console.error('Twitch user ID not available');
