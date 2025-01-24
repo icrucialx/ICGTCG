@@ -810,7 +810,11 @@ async function fetchTwitchUser() {
         const pulls = await response.json();
 
         const pullsDiv = document.getElementById("logged-pulls");
-        pullsDiv.innerHTML = "<h2>Logged Pulls</h2>";
+if (pullsDiv) {
+    pullsDiv.innerHTML = "<h2>Logged Pulls</h2>";
+} else {
+    console.error("Element with ID 'logged-pulls' not found.");
+}
 
         pulls.forEach(pull => {
             // Create a container for each pull
@@ -844,6 +848,21 @@ async function fetchTwitchUser() {
     }
 }
 
+
+    function updateLoggedPulls() {
+    const pullsDiv = document.getElementById("logged-pulls");
+    if (pullsDiv) {
+        pullsDiv.innerHTML = "<h2>Logged Pulls</h2>";
+    }
+}
+
+function updateCollection() {
+    const pullsDiv = document.getElementById("user-collection"); // Different variable
+    if (pullsDiv) {
+        pullsDiv.innerHTML = "<h2>Your Collection</h2>";
+    }
+}
+    
     async function logPull(userId, cardName, rarity) {
     try {
         const payload = { user_id: userId, card_name: cardName, rarity: rarity };
