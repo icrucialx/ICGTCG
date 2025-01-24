@@ -769,11 +769,30 @@ const cardImages = {
         pullsDiv.innerHTML = "<h2>Logged Pulls</h2>";
 
         pulls.forEach(pull => {
+            // Create a container for each pull
             const pullDiv = document.createElement("div");
-            pullDiv.innerHTML = `
-                Card: <span>${pull.card_name}</span>, 
-                Rarity: <span class="rarity-${pull.rarity.toLowerCase()}">${pull.rarity}</span>, 
-                Date: ${pull.date_of_pull}`;
+            pullDiv.className = `card-entry rarity-${pull.rarity.toLowerCase()}`; // Add rarity class
+
+            // Add card image
+            const img = document.createElement("img");
+            img.src = cardImages[pull.card_name] || "./images/default.png"; // Default image if missing
+            img.alt = pull.card_name;
+            img.className = "card-image";
+
+            // Add card text
+            const textDiv = document.createElement("div");
+            textDiv.className = "card-text";
+            textDiv.innerHTML = `
+                <strong>Card:</strong> ${pull.card_name} <br>
+                <strong>Rarity:</strong> ${pull.rarity} <br>
+                <strong>Date:</strong> ${new Date(pull.date_of_pull).toLocaleString()}
+            `;
+
+            // Append image and text to the pull container
+            pullDiv.appendChild(img);
+            pullDiv.appendChild(textDiv);
+
+            // Append the styled card to the pullsDiv
             pullsDiv.appendChild(pullDiv);
         });
     } catch (error) {
@@ -822,17 +841,35 @@ const cardImages = {
         collectionDiv.innerHTML = "<h2>Your Collection</h2>";
 
         collection.forEach(card => {
+            // Create a container for each card
             const cardDiv = document.createElement("div");
-            cardDiv.innerHTML = `
-                Card: <span>${card.card_name}</span>, 
-                Rarity: <span class="rarity-${card.rarity.toLowerCase()}">${card.rarity}</span>`;
+            cardDiv.className = `card-entry rarity-${card.rarity.toLowerCase()}`; // Add rarity class
+
+            // Add card image
+            const img = document.createElement("img");
+            img.src = cardImages[card.card_name] || "./images/default.png"; // Default image if missing
+            img.alt = card.card_name;
+            img.className = "card-image";
+
+            // Add card text
+            const textDiv = document.createElement("div");
+            textDiv.className = "card-text";
+            textDiv.innerHTML = `
+                <strong>Card:</strong> ${card.card_name} <br>
+                <strong>Rarity:</strong> ${card.rarity}
+            `;
+
+            // Append image and text to the card container
+            cardDiv.appendChild(img);
+            cardDiv.appendChild(textDiv);
+
+            // Append the styled card to the collectionDiv
             collectionDiv.appendChild(cardDiv);
         });
     } catch (error) {
         console.error("Error fetching collection:", error);
     }
 }
-
     async function fetchTopCards() {
     try {
         const response = await fetch(`${backendUrl}/analytics/top-cards`);
