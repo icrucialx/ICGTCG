@@ -740,7 +740,8 @@ const cardImages = {
 
     const cardsUrl = "https://raw.githubusercontent.com/icrucialx/tcg-gacha-database/main/cards.json";
     const backendUrl = "https://icrucialtcg.onrender.com";
-    const userId = 'user123'; // Replace with dynamic user authentication later
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('user'); // Twitch username
 
     const clientId = 'YOUR_TWITCH_CLIENT_ID'; // Replace with your Twitch Client ID
 const redirectUri = 'https://your-frontend-url.com'; // Replace with your frontend URL
