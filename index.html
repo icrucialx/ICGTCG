@@ -752,14 +752,13 @@ if (userIdDisplay) {
 async function fetchTwitchUser() {
     const clientId = 'YOUR_TWITCH_CLIENT_ID'; // Replace with your Twitch Client ID
     const redirectUri = 'https://your-frontend-url.com'; // Replace with your frontend URL
-    const token = new URLSearchParams(window.location.hash.substring(1)).get('access_token');
+const token = new URLSearchParams(window.location.hash.substring(1)).get('access_token');
 
-    if (!token) {
-        // Redirect to Twitch OAuth if no token is found
-        const oauthUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=user:read:email`;
-        window.location.href = oauthUrl;
-        return;
-    }
+if (!token) {
+    console.warn("No access token found. Redirecting to Twitch login.");
+    const oauthUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=user:read:email`;
+    window.location.href = oauthUrl;
+}
 
     // Fetch Twitch user data
     const response = await fetch('https://api.twitch.tv/helix/users', {
@@ -1010,13 +1009,14 @@ async function fetchRarityDistribution() {
     });
 
     function playSound(id) {
-      const audio = document.getElementById(id);
-      if (audio) {
+    const audio = document.getElementById(id);
+    if (audio) {
         audio.currentTime = 0; // Reset the audio to the start
         audio.play().catch((err) => {
-          console.error(`Error playing sound for ID: ${id}`, err);
+            console.error(`Error playing sound for ID: ${id}`, err);
         });
-      }
+    } else {
+        console.warn(`Audio element with ID "${id}" not found.`);
     }
 
 async function handlePull(cardName, rarity) {
@@ -1027,6 +1027,11 @@ async function handlePull(cardName, rarity) {
 function drawCards(userId) {
   const resultDiv = document.getElementById('result');
   resultDiv.innerHTML = ''; // Clear previous cards
+
+  if (!userId) {
+    console.error("User ID is not defined. Cannot draw cards.");
+    return;
+}
 
   // Display Twitch user ID
   const userIdDiv = document.createElement('div');
@@ -1120,20 +1125,24 @@ function drawCards(userId) {
 
 // Trigger fetching Twitch user on page load
 
-document.getElementById('user-id-display').innerText = `Logged in as: ${user.display_name}`;
+if (user && document.getElementById('user-id-display')) {
+    document.getElementById('user-id-display').innerText = `Logged in as: ${user.display_name}`;
+} else {
+    console.error("User or 'user-id-display' element is not available.");
+}
+    
 window.onload = async () => {
-  await fetchTwitchUser(); // Fetch user data
-  if (window.twitchUserId) {
-    drawCards(window.twitchUserId); // Call drawCards only if Twitch user ID exists
-  } else {
-    console.error("Twitch User ID is missing. Ensure the user is logged in.");
-  }
+    await fetchTwitchUser(); // Fetch user data
+    if (window.twitchUserId) {
+        drawCards(window.twitchUserId); // Call drawCards only if Twitch user ID exists
+    } else {
+        console.error("Twitch User ID is missing. Ensure the user is logged in.");
+    }
 };
-    
-document.addEventListener("DOMContentLoaded", () => {
-    fetchTwitchUser(); // Ensure the DOM is loaded before executing this function
-});
-    
+
+console.log("Twitch User ID:", window.twitchUserId);
+console.log("Payload sent to backend:", { user_id: userId, card_name: cardName, rarity });
+      
   </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <button onclick="fetchUserCollection('user123')">Show My Collection</button>
