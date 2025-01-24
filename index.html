@@ -870,21 +870,61 @@ const cardImages = {
         console.error("Error fetching collection:", error);
     }
 }
-    async function fetchTopCards() {
+async function fetchTopCards() {
     try {
         const response = await fetch(`${backendUrl}/analytics/top-cards`);
         const topCards = await response.json();
-        const topCardsDiv = document.getElementById('top-cards');
-        topCardsDiv.innerHTML = '<h2>Top Pulled Cards</h2>';
 
-        topCards.forEach(card => {
-            const cardDiv = document.createElement('div');
-            cardDiv.textContent = `Card: ${card.card_name}, Pulls: ${card.pulls}`;
-            topCardsDiv.appendChild(cardDiv);
-        });
+        // Prepare data for the chart
+        const cardNames = topCards.map(card => card.card_name); // Get card names
+        const pullCounts = topCards.map(card => card.pulls); // Get pull counts
+
+        // Render the chart
+        renderTopCardsChart(cardNames, pullCounts);
     } catch (error) {
-        console.error('Error fetching top cards:', error);
+        console.error("Error fetching top cards:", error);
     }
+}
+
+function renderTopCardsChart(cardNames, pullCounts) {
+    const ctx = document.getElementById('topCardsChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'bar', // Use a bar chart
+        data: {
+            labels: cardNames, // X-axis labels (card names)
+            datasets: [{
+                label: 'Number of Pulls',
+                data: pullCounts, // Y-axis data (pull counts)
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.2)', // Light blue
+                    'rgba(54, 162, 235, 0.2)', // Blue
+                    'rgba(255, 206, 86, 0.2)', // Yellow
+                    'rgba(255, 99, 132, 0.2)', // Red
+                    'rgba(153, 102, 255, 0.2)' // Purple
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)', // Light blue border
+                    'rgba(54, 162, 235, 1)', // Blue border
+                    'rgba(255, 206, 86, 1)', // Yellow border
+                    'rgba(255, 99, 132, 1)', // Red border
+                    'rgba(153, 102, 255, 1)' // Purple border
+                ],
+                borderWidth: 1 // Thickness of borders
+            }]
+        },
+        options: {
+    plugins: {
+        tooltip: {
+            callbacks: {
+                label: function(context) {
+                    return `Card: ${context.label}, Pulls: ${context.raw}`;
+                }
+            }
+        }
+    }
+}
+    });
 }
 
 async function fetchRarityDistribution() {
@@ -1027,11 +1067,16 @@ pulledCards.forEach(async (card) => {
 document.addEventListener("DOMContentLoaded", drawCards);
 
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <button onclick="fetchUserCollection('user123')">Show My Collection</button>
 <div id="user-collection"></div>
-  <div id="top-cards"></div>
 <div id="rarity-distribution"></div>
+  <button onclick="fetchRarityDistribution()">Show Rarity Distribution</button>
+  <div id="top-cards-section">
+    <h2>Top Pulled Cards</h2>
+    <canvas id="topCardsChart" width="400" height="200"></canvas>
+</div>
+  <div id="top-cards"></div>
 <button onclick="fetchTopCards()">Show Top Cards</button>
-<button onclick="fetchRarityDistribution()">Show Rarity Distribution</button>
 </body>
 </html>
