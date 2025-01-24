@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <button id="twitch-login">Login with Twitch</button> 
+<div id="user-id-display"></div>
 <button onclick="fetchLoggedPulls()">Show Logged Pulls</button>
 <div id="logged-pulls"></div>
 <head>
@@ -736,43 +737,56 @@ const cardImages = {
   "Gold Tapu Bulu": "./images/gold_tapu_bulu.png",
   "Gold Tapu Fini": "./images/gold_tapu_fini.png",
 };
-
+    const userIdDisplay = document.getElementById('user-id-display');
+if (userIdDisplay) {
+    userIdDisplay.innerText = `Logged in as: ${user.display_name}`;
+} else {
+    console.warn("Element with ID 'user-id-display' not found.");
+}
+    
     const cardsUrl = "https://raw.githubusercontent.com/icrucialx/tcg-gacha-database/main/cards.json";
     const backendUrl = "https://icrucialtcg.onrender.com";
     const urlParams = new URLSearchParams(window.location.search);
     const userId = urlParams.get('user'); // Twitch username
 
 async function fetchTwitchUser() {
-  const clientId = 'YOUR_TWITCH_CLIENT_ID'; // Replace with your Twitch Client ID
-  const redirectUri = 'https://your-frontend-url.com'; // Replace with your frontend URL
-  const token = new URLSearchParams(window.location.hash.substring(1)).get('access_token');
+    const clientId = 'YOUR_TWITCH_CLIENT_ID'; // Replace with your Twitch Client ID
+    const redirectUri = 'https://your-frontend-url.com'; // Replace with your frontend URL
+    const token = new URLSearchParams(window.location.hash.substring(1)).get('access_token');
 
-  if (!token) {
-    // Redirect to Twitch OAuth if no token is found
-    const oauthUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=user:read:email`;
-    window.location.href = oauthUrl;
-    return;
-  }
+    if (!token) {
+        // Redirect to Twitch OAuth if no token is found
+        const oauthUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=user:read:email`;
+        window.location.href = oauthUrl;
+        return;
+    }
 
-  // Fetch Twitch user data
-  const response = await fetch('https://api.twitch.tv/helix/users', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Client-Id': clientId,
-    },
-  });
+    // Fetch Twitch user data
+    const response = await fetch('https://api.twitch.tv/helix/users', {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Client-Id': clientId,
+        },
+    });
 
-  const data = await response.json();
-  const user = data.data[0]; // Twitch user object
+    const data = await response.json();
+    const user = data.data[0]; // Twitch user object
 
-  if (user) {
-    console.log('Twitch User:', user);
-    window.twitchUserId = user.id; // Save the user ID globally for use in drawCards
-    document.getElementById('user-id-display').innerText = `Logged in as: ${user.display_name}`; // Display the user name
-    drawCards(user.id); // Pass the user ID to drawCards
-  } else {
-    console.error('Failed to fetch Twitch user data');
-  }
+    if (user) {
+        console.log('Twitch User:', user);
+        window.twitchUserId = user.id; // Save the user ID globally for use in drawCards
+
+        const userIdDisplay = document.getElementById('user-id-display');
+        if (userIdDisplay) {
+            userIdDisplay.innerText = `Logged in as: ${user.display_name}`;
+        } else {
+            console.warn("Element with ID 'user-id-display' not found.");
+        }
+
+        drawCards(user.id); // Pass the user ID to drawCards
+    } else {
+        console.error('Failed to fetch Twitch user data');
+    }
 }
     
     const rarityWeights = {
@@ -1106,6 +1120,7 @@ function drawCards(userId) {
 
 // Trigger fetching Twitch user on page load
 
+document.getElementById('user-id-display').innerText = `Logged in as: ${user.display_name}`;
 window.onload = async () => {
   await fetchTwitchUser(); // Fetch user data
   if (window.twitchUserId) {
@@ -1114,6 +1129,10 @@ window.onload = async () => {
     console.error("Twitch User ID is missing. Ensure the user is logged in.");
   }
 };
+    
+document.addEventListener("DOMContentLoaded", () => {
+    fetchTwitchUser(); // Ensure the DOM is loaded before executing this function
+});
     
   </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
