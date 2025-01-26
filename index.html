@@ -755,12 +755,14 @@ const cardImages = {
     };
 
     async function login() {
-      try {
-        window.location.href = `${backendUrl}/login`; // Redirect to backend OAuth login
-      } catch (error) {
+    try {
+        console.log("Login button clicked");
+        window.location.href = `${backendUrl}/login`;
+    } catch (error) {
         console.error("Login failed:", error);
-      }
     }
+}
+
 
     async function handleOAuthCallback() {
     const urlParams = new URLSearchParams(window.location.search);
