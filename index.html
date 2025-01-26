@@ -763,16 +763,16 @@ const cardImages = {
     }
 
     async function handleOAuthCallback() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const token = urlParams.get("token");
-      const id = urlParams.get("user_id");
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
+    const id = urlParams.get("user_id");
 
-      if (token && id) {
+    if (token && id) {
         authToken = token;
-        userId = id;
+        userId = id; // This is the critical part
         console.log("Authenticated as:", userId);
-      }
     }
+}
     
     async function fetchCards() {
     try {
@@ -854,6 +854,11 @@ const cardImages = {
 
     async function logPull(userId, cardName, rarity) {
     try {
+        if (!userId) {
+            console.error("User ID is missing. Cannot log pull.");
+            return;
+        }
+
         const payload = { user_id: userId, card_name: cardName, rarity: rarity };
         console.log("Payload being sent to backend:", payload);
 
@@ -863,15 +868,14 @@ const cardImages = {
             body: JSON.stringify(payload),
         });
 
-        const result = await response.json(); // Parse JSON once
-
+        const result = await response.json();
         if (!response.ok) {
-            console.error("Server responded with an error:", result); // Use the parsed result
+            console.error("Server responded with an error:", result);
         } else {
-            console.log('Logged pull:', result);
+            console.log("Logged pull:", result);
         }
     } catch (error) {
-        console.error('Error logging pull:', error);
+        console.error("Error logging pull:", error);
     }
 }
     async function recordPull(cardName, rarity) {
