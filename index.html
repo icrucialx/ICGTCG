@@ -739,6 +739,8 @@ const cardImages = {
 
     const cardsUrl = "https://raw.githubusercontent.com/icrucialx/tcg-gacha-database/main/cards.json";
     const backendUrl = "https://icrucialtcg.onrender.com";
+    let authToken = ""; // To store the user’s token dynamically
+    let userId = ""; // To store the user ID dynamically
     const userId = 'user123'; // Replace with dynamic user authentication later
     
     const rarityWeights = {
@@ -749,6 +751,15 @@ const cardImages = {
       secretrare: 1
     };
 
+    async function login() {
+      try {
+        window.location.href = `${backendUrl}/login`; // Redirect to backend OAuth login
+      } catch (error) {
+        console.error("Login failed:", error);
+      }
+    }
+
+    
     async function fetchCards() {
     try {
         const response = await fetch(`${backendUrl}/cards`);
@@ -832,78 +843,76 @@ const cardImages = {
     });
 }
 
-    async function fetchUserCollection(userId) {
-    try {
-        const response = await fetch(`${backendUrl}/collection/${userId}`);
-        const collection = await response.json();
+     async function fetchUserCollection() {
+      try {
+        const response = await fetch(`${backendUrl}/collection/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+        if (!response.ok) throw new Error("Failed to fetch collection");
 
+        const collection = await response.json();
         const collectionDiv = document.getElementById("user-collection");
         collectionDiv.innerHTML = "<h2>Your Collection</h2>";
 
-        collection.forEach(card => {
-            // Create a container for each card
-            const cardDiv = document.createElement("div");
-            cardDiv.className = `card-entry rarity-${card.rarity.toLowerCase()}`; // Add rarity class
-
-            // Add card image
-            const img = document.createElement("img");
-            img.src = cardImages[card.card_name] || "./images/default.png"; // Default image if missing
-            img.alt = card.card_name;
-            img.className = "card-image";
-
-            // Add card text
-            const textDiv = document.createElement("div");
-            textDiv.className = "card-text";
-            textDiv.innerHTML = `
-                <strong>Card:</strong> ${card.card_name} <br>
-                <strong>Rarity:</strong> ${card.rarity}
-            `;
-
-            // Append image and text to the card container
-            cardDiv.appendChild(img);
-            cardDiv.appendChild(textDiv);
-
-            // Append the styled card to the collectionDiv
-            collectionDiv.appendChild(cardDiv);
+        collection.forEach((card) => {
+          const cardDiv = document.createElement("div");
+          cardDiv.innerHTML = `
+            <strong>Card:</strong> ${card.card_name}<br>
+            <strong>Rarity:</strong> ${card.rarity}
+          `;
+          collectionDiv.appendChild(cardDiv);
         });
-    } catch (error) {
+      } catch (error) {
         console.error("Error fetching collection:", error);
+      }
     }
-}
-    async function fetchTopCards() {
-    try {
-        const response = await fetch(`${backendUrl}/analytics/top-cards`);
+   async function fetchTopCards() {
+      try {
+        const response = await fetch(`${backendUrl}/analytics/top-cards`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+        if (!response.ok) throw new Error("Failed to fetch top cards");
+
         const topCards = await response.json();
-        const topCardsDiv = document.getElementById('top-cards');
-        topCardsDiv.innerHTML = '<h2>Top Pulled Cards</h2>';
+        const topCardsDiv = document.getElementById("top-cards");
+        topCardsDiv.innerHTML = "<h2>Top Pulled Cards</h2>";
 
-        topCards.forEach(card => {
-            const cardDiv = document.createElement('div');
-            cardDiv.textContent = `Card: ${card.card_name}, Pulls: ${card.pulls}`;
-            topCardsDiv.appendChild(cardDiv);
+        topCards.forEach((card) => {
+          const cardDiv = document.createElement("div");
+          cardDiv.textContent = `Card: ${card.card_name}, Pulls: ${card.pulls}`;
+          topCardsDiv.appendChild(cardDiv);
         });
-    } catch (error) {
-        console.error('Error fetching top cards:', error);
+      } catch (error) {
+        console.error("Error fetching top cards:", error);
+      }
     }
-}
 
-async function fetchRarityDistribution() {
-    try {
-        const response = await fetch(`${backendUrl}/analytics/rarity-distribution`);
+ async function fetchRarityDistribution() {
+      try {
+        const response = await fetch(`${backendUrl}/analytics/rarity-distribution`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+        if (!response.ok) throw new Error("Failed to fetch rarity distribution");
+
         const distribution = await response.json();
-        const rarityDiv = document.getElementById('rarity-distribution');
-        rarityDiv.innerHTML = '<h2>Rarity Distribution</h2>';
+        const rarityDiv = document.getElementById("rarity-distribution");
+        rarityDiv.innerHTML = "<h2>Rarity Distribution</h2>";
 
-        distribution.forEach(rarity => {
-            const rarityDivChild = document.createElement('div');
-            rarityDivChild.textContent = `Rarity: ${rarity.rarity}, Pulls: ${rarity.pulls}`;
-            rarityDiv.appendChild(rarityDivChild);
+        distribution.forEach((rarity) => {
+          const rarityDivChild = document.createElement("div");
+          rarityDivChild.textContent = `Rarity: ${rarity.rarity}, Pulls: ${rarity.pulls}`;
+          rarityDiv.appendChild(rarityDivChild);
         });
-    } catch (error) {
-        console.error('Error fetching rarity distribution:', error);
+      } catch (error) {
+        console.error("Error fetching rarity distribution:", error);
+      }
     }
-}
-    
     function weightedRandom(items, weights) {
       const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
       const random = Math.random() * totalWeight;
@@ -914,6 +923,18 @@ async function fetchRarityDistribution() {
         if (random < cumulativeWeight) {
           return items[i];
         }
+      }
+    }
+
+    async function handleOAuthCallback() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get("token");
+      const id = urlParams.get("user_id");
+
+      if (token && id) {
+        authToken = token;
+        userId = id;
+        console.log("Authenticated as:", userId);
       }
     }
 
