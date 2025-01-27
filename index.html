@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<button onclick="fetchLoggedPulls()">Show Logged Pulls</button>
-<div id="logged-pulls"></div>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -308,6 +306,7 @@ h1 {
   <div id="user-collection"></div>
   <div id="top-cards"></div>
   <div id="rarity-distribution"></div>
+  <button onclick="fetchLoggedPulls()">Show Logged Pulls</button>
   <button onclick="fetchUserCollection()">Show My Collection</button>
   <button onclick="fetchTopCards()">Show Top Cards</button>
   <button onclick="fetchRarityDistribution()">Show Rarity Distribution</button>
@@ -816,24 +815,43 @@ const cardImages = {
 
     async function fetchLoggedPulls() {
     try {
-        const response = await fetch(`${backendUrl}/pulls`);
+        // Ensure the user is authenticated before making the request
+        if (!authToken) {
+            throw new Error("User is not authenticated. Please log in.");
+        }
+
+        // Fetch logged pulls from the backend
+        const response = await fetch(`${backendUrl}/pulls`, {
+            headers: {
+                Authorization: `Bearer ${authToken}`, // Include the authentication token
+            },
+        });
+
+        // Check if the response is OK
+        if (!response.ok) {
+            throw new Error(`Failed to fetch pulls: ${response.status} ${response.statusText}`);
+        }
+
+        // Parse the JSON response
         const pulls = await response.json();
 
+        // Select the container for displaying pulls
         const pullsDiv = document.getElementById("logged-pulls");
         pullsDiv.innerHTML = "<h2>Logged Pulls</h2>";
 
-        pulls.forEach(pull => {
+        // Iterate over each pull and add it to the DOM
+        pulls.forEach((pull) => {
             // Create a container for each pull
             const pullDiv = document.createElement("div");
             pullDiv.className = `card-entry rarity-${pull.rarity.toLowerCase()}`; // Add rarity class
 
             // Add card image
             const img = document.createElement("img");
-            img.src = cardImages[pull.card_name] || "./images/default.png"; // Default image if missing
+            img.src = cardImages[pull.card_name] || "./images/default.png"; // Use default image if missing
             img.alt = pull.card_name;
             img.className = "card-image";
 
-            // Add card text
+            // Add card details
             const textDiv = document.createElement("div");
             textDiv.className = "card-text";
             textDiv.innerHTML = `
@@ -851,8 +869,16 @@ const cardImages = {
         });
     } catch (error) {
         console.error("Error fetching logged pulls:", error);
+
+        // Display an error message in the UI
+        const pullsDiv = document.getElementById("logged-pulls");
+        pullsDiv.innerHTML = `
+            <h2>Error</h2>
+            <p>Unable to fetch logged pulls. Please try again later.</p>
+        `;
     }
 }
+
 
     async function logPull(userId, cardName, rarity) {
     try {
