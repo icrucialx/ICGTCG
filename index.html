@@ -763,21 +763,15 @@ const cardImages = {
 }
 
 
-    async function handleOAuthCallback() {
-    const urlParams = new URLSearchParams(window.location.search); // Parse the URL query parameters
-    const token = urlParams.get("token");
-    const userId = urlParams.get("user_id");
-    const code = urlParams.get("code"); // Get the authorization code (if present)
+   async function handleOAuthCallback() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get("code");
 
-    if (token && userId) {
-        // User is already authenticated
-        console.log("User authenticated:", userId);
-        authToken = token; // Save the token for further API calls
-    } else if (code) {
+    if (code) {
         try {
-            // Exchange the code for a token via the backend
+            // Send the code to your backend for token exchange
             const response = await fetch(`${backendUrl}/auth/twitch/callback`, {
-                method: 'POST', // Update backend to support POST if necessary
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -789,20 +783,19 @@ const cardImages = {
             }
 
             const data = await response.json();
-            authToken = data.token; // Save the access token
-            userId = data.user.id; // Save the user ID
+            authToken = data.token;
+            userId = data.user.id;
             console.log("User authenticated:", userId);
 
-            // Update the UI or redirect to another part of the app
-            window.history.replaceState({}, document.title, "/"); // Clean up the URL
+            // Clean up the URL to remove the code parameter
+            window.history.replaceState({}, document.title, "/");
         } catch (error) {
             console.error("Error during OAuth callback:", error);
         }
     } else {
-        console.error("No authorization code or token found in the URL.");
+        console.error("No authorization code found.");
     }
 }
-
 
 document.addEventListener("DOMContentLoaded", handleOAuthCallback);
 
