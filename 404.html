@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
     <script>
-        // Debugging: Log the current URL
-        console.log("404 Redirect triggered. Current URL:", window.location.href);
-
-        // Redirect to the index.html
-        window.location.href = "/";
+        // Redirect all unmatched routes to the project-specific index.html
+        const projectBase = "/icrucialtcg/"; // Set your project base path
+        const newUrl = projectBase;
+        window.location.href = newUrl;
     </script>
 </head>
 <body>
-    <h1>Redirecting to the main page...</h1>
+    <h1>Redirecting to the project homepage...</h1>
 </body>
 </html>
