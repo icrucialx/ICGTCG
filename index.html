@@ -770,28 +770,25 @@ async function handleOAuthCallback() {
     if (token && userId) {
         console.log("User authenticated:", userId);
 
-        // Save the token and user ID for later use
-        authToken = token;
-        userId = userId; // This line is redundant; it should just use the existing `userId`
+        // Save token and userId in sessionStorage for persistence
+        sessionStorage.setItem("authToken", token);
+        sessionStorage.setItem("userId", userId);
 
-        // Optional: Update the UI to indicate the user is authenticated
+        // Optional: Update the UI
         const statusElement = document.getElementById("status");
         if (statusElement) {
             statusElement.innerText = `Welcome, User ID: ${userId}`;
         }
-
-        // Optional: Store token and userId in sessionStorage or localStorage for persistence
-        sessionStorage.setItem("authToken", token);
-        sessionStorage.setItem("userId", userId);
     } else {
         console.error("No token or user ID found in the URL.");
     }
 
-    // Clean up the URL by removing query parameters
+    // Clean up the URL to prevent 404 errors
     window.history.replaceState({}, document.title, window.location.pathname);
 }
 
 document.addEventListener("DOMContentLoaded", handleOAuthCallback);
+
 
 async function fetchUserCollection() {
     try {
