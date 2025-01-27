@@ -764,14 +764,20 @@ const cardImages = {
 
 
     async function handleOAuthCallback() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get("code");
+    const urlParams = new URLSearchParams(window.location.search); // Parse the URL query parameters
+    const token = urlParams.get("token");
+    const userId = urlParams.get("user_id");
+    const code = urlParams.get("code"); // Get the authorization code (if present)
 
-    if (code) {
+    if (token && userId) {
+        // User is already authenticated
+        console.log("User authenticated:", userId);
+        authToken = token; // Save the token for further API calls
+    } else if (code) {
         try {
-            // Send the code to your backend for token exchange
+            // Exchange the code for a token via the backend
             const response = await fetch(`${backendUrl}/auth/twitch/callback`, {
-                method: 'POST',
+                method: 'POST', // Update backend to support POST if necessary
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -787,13 +793,16 @@ const cardImages = {
             userId = data.user.id; // Save the user ID
             console.log("User authenticated:", userId);
 
-            // Optional: Redirect or update the UI
-            window.history.pushState({}, document.title, "/"); // Clean up the URL
+            // Update the UI or redirect to another part of the app
+            window.history.replaceState({}, document.title, "/"); // Clean up the URL
         } catch (error) {
             console.error("Error during OAuth callback:", error);
         }
+    } else {
+        console.error("No authorization code or token found in the URL.");
     }
 }
+
 
 document.addEventListener("DOMContentLoaded", handleOAuthCallback);
 
