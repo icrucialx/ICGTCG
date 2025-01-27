@@ -783,11 +783,13 @@ async function handleOAuthCallback() {
         console.error("No token or user ID found in the URL.");
     }
 
-    // Clean up the URL to prevent 404 errors
-    window.history.replaceState({}, document.title, window.location.pathname);
+    // Clean up the URL to prevent query parameters from persisting
+    const currentPath = window.location.pathname;
+    window.history.replaceState({}, document.title, currentPath);
 }
 
 document.addEventListener("DOMContentLoaded", handleOAuthCallback);
+
 
 
 async function fetchUserCollection() {
