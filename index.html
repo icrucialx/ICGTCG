@@ -764,30 +764,32 @@ const cardImages = {
 
 async function handleOAuthCallback() {
     const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get("token");
-    const userId = urlParams.get("user_id");
+    const code = urlParams.get("code");
 
-    if (token && userId) {
-        console.log("Token and UserID found:", token, userId);
+    if (code) {
+        console.log("Authorization code received:", code);
 
-        // Store token and userId in sessionStorage
-        sessionStorage.setItem("authToken", token);
-        sessionStorage.setItem("userId", userId);
+        // Send the code to the backend to exchange for an access token
+        const response = await fetch(`${backendUrl}/auth/twitch/callback`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ code }),
+        });
 
-        // Optional: Update the UI
-        const statusElement = document.getElementById("status");
-        if (statusElement) {
-            statusElement.innerText = `Welcome, User ID: ${userId}`;
+        if (!response.ok) {
+            throw new Error(`Failed to exchange code: ${response.status}`);
         }
+
+        const data = await response.json();
+        console.log("Authentication successful:", data);
     } else {
-        console.error("No token or user ID found in the URL.");
+        console.error("No authorization code found in the URL.");
     }
 
     // Clean up the URL
-    console.log("Current URL before cleanup:", window.location.href);
-    const currentPath = window.location.pathname;
-    window.history.replaceState({}, document.title, currentPath);
-    console.log("URL cleaned to:", currentPath);
+    window.history.replaceState({}, document.title, window.location.pathname);
 }
 
 
