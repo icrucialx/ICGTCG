@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
     <script>
-        // Redirect all unmatched routes to the project-specific index.html
-        const projectBase = "/icrucialtcg/"; // Set your project base path
-        const newUrl = projectBase;
-        window.location.href = newUrl;
+        // Preserve query parameters during redirection
+        const projectBase = "/icrucialtcg/";
+        const queryParams = window.location.search; // Get query parameters (e.g., ?token=...&user_id=...)
+        const newUrl = projectBase + queryParams; // Append query parameters to the redirect URL
+        window.location.href = newUrl; // Redirect while preserving query parameters
     </script>
 </head>
 <body>
