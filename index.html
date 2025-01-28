@@ -896,7 +896,7 @@ async function fetchUserCollection() {
     const token = sessionStorage.getItem("authToken");
     const userId = sessionStorage.getItem("userId");
 
-    if (!userId || !token) {
+    if (!token || !userId) {
         console.error("User ID or token is missing. Cannot log pull.");
         return;
     }
