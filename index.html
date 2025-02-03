@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+<button onclick="fetchLoggedPulls()">Show Logged Pulls</button>
+<div id="logged-pulls"></div>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -301,15 +303,7 @@ h1 {
 </head>
 <body>
   <h1>ReCRUit</h1>
-  <button onclick="login()">Login with Twitch</button>
-  <div id="logged-pulls"></div>
-  <div id="user-collection"></div>
-  <div id="top-cards"></div>
-  <div id="rarity-distribution"></div>
-  <button onclick="fetchLoggedPulls()">Show Logged Pulls</button>
-  <button onclick="fetchUserCollection()">Show My Collection</button>
-  <button onclick="fetchTopCards()">Show Top Cards</button>
-  <button onclick="fetchRarityDistribution()">Show Rarity Distribution</button>
+  
   <div id="result"></div>
 
   <!-- Audio Tags for Sounds -->
@@ -322,10 +316,7 @@ h1 {
 </body>
   
   <script>
-      const backendUrl = "https://icrucialtcg.onrender.com";
-    let authToken = ""; // Store the user’s token dynamically
-    let userId = ""; // Store the user ID dynamically
-    
+  
 const cardPool = {
   common: [
     "Pidgey", "Rattata", "Zubat", "Caterpie", "Weedle", "Spearow", "Sandshrew", 
@@ -744,6 +735,11 @@ const cardImages = {
   "Gold Tapu Bulu": "./images/gold_tapu_bulu.png",
   "Gold Tapu Fini": "./images/gold_tapu_fini.png",
 };
+
+
+    const cardsUrl = "https://raw.githubusercontent.com/icrucialx/tcg-gacha-database/main/cards.json";
+    const backendUrl = "https://icrucialtcg.onrender.com";
+    const userId = 'user123'; // Replace with dynamic user authentication later
     
     const rarityWeights = {
       common: 50,
@@ -753,117 +749,37 @@ const cardImages = {
       secretrare: 1
     };
 
-    async function login() {
+    async function fetchCards() {
     try {
-        console.log("Login button clicked");
-        window.location.href = `${backendUrl}/login`; // Redirect to backend for Twitch login
+        const response = await fetch(`${backendUrl}/cards`);
+        const cards = await response.json();
+        console.log("Fetched cards:", cards);
+        return cards;
     } catch (error) {
-        console.error("Login failed:", error);
-    }
-}
-
-async function handleOAuthCallback() {
-    const urlParams = new URLSearchParams(window.location.search); // Parse query parameters
-    const token = urlParams.get("token"); // Extract token
-    const userId = urlParams.get("user_id"); // Extract user ID
-
-    if (token && userId) {
-        console.log("User authenticated:", userId);
-
-        // Save token and userId for further use
-        sessionStorage.setItem("authToken", token);
-        sessionStorage.setItem("userId", userId);
-
-        // Optional: Update the UI
-        const statusElement = document.getElementById("status");
-        if (statusElement) {
-            statusElement.innerText = `Welcome, User ID: ${userId}`;
-        }
-    } else {
-        console.error("No authorization code found in the URL.");
-    }
-
-    // Clean up the URL to remove query parameters
-    window.history.replaceState({}, document.title, window.location.pathname);
-}
-
-
-
-
-
-async function fetchUserCollection() {
-    try {
-        const token = authToken || sessionStorage.getItem("authToken"); // Get token from variable or storage
-        const userIdFromStorage = userId || sessionStorage.getItem("userId"); // Get userId from variable or storage
-
-        if (!token || !userIdFromStorage) {
-            throw new Error("User is not authenticated.");
-        }
-
-        const response = await fetch(`${backendUrl}/collection/${userIdFromStorage}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        if (!response.ok) throw new Error("Failed to fetch collection");
-
-        const collection = await response.json();
-        const collectionDiv = document.getElementById("user-collection");
-        collectionDiv.innerHTML = "<h2>Your Collection</h2>";
-
-        collection.forEach((card) => {
-            const cardDiv = document.createElement("div");
-            cardDiv.innerHTML = `
-                <strong>Card:</strong> ${card.card_name}<br>
-                <strong>Rarity:</strong> ${card.rarity}
-            `;
-            collectionDiv.appendChild(cardDiv);
-        });
-    } catch (error) {
-        console.error("Error fetching collection:", error);
+        console.error("Error fetching cards:", error);
     }
 }
 
     async function fetchLoggedPulls() {
     try {
-        // Ensure the user is authenticated before making the request
-        if (!authToken) {
-            throw new Error("User is not authenticated. Please log in.");
-        }
-
-        // Fetch logged pulls from the backend
-        const response = await fetch(`${backendUrl}/pulls`, {
-            headers: {
-                Authorization: `Bearer ${authToken}`, // Include the authentication token
-            },
-        });
-
-        // Check if the response is OK
-        if (!response.ok) {
-            throw new Error(`Failed to fetch pulls: ${response.status} ${response.statusText}`);
-        }
-
-        // Parse the JSON response
+        const response = await fetch(`${backendUrl}/pulls`);
         const pulls = await response.json();
 
-        // Select the container for displaying pulls
         const pullsDiv = document.getElementById("logged-pulls");
         pullsDiv.innerHTML = "<h2>Logged Pulls</h2>";
 
-        // Iterate over each pull and add it to the DOM
-        pulls.forEach((pull) => {
+        pulls.forEach(pull => {
             // Create a container for each pull
             const pullDiv = document.createElement("div");
             pullDiv.className = `card-entry rarity-${pull.rarity.toLowerCase()}`; // Add rarity class
 
             // Add card image
             const img = document.createElement("img");
-            img.src = cardImages[pull.card_name] || "./images/default.png"; // Use default image if missing
+            img.src = cardImages[pull.card_name] || "./images/default.png"; // Default image if missing
             img.alt = pull.card_name;
             img.className = "card-image";
 
-            // Add card details
+            // Add card text
             const textDiv = document.createElement("div");
             textDiv.className = "card-text";
             textDiv.innerHTML = `
@@ -881,91 +797,153 @@ async function fetchUserCollection() {
         });
     } catch (error) {
         console.error("Error fetching logged pulls:", error);
-
-        // Display an error message in the UI
-        const pullsDiv = document.getElementById("logged-pulls");
-        pullsDiv.innerHTML = `
-            <h2>Error</h2>
-            <p>Unable to fetch logged pulls. Please try again later.</p>
-        `;
     }
 }
 
-
-   async function logPull(cardName, rarity) {
-    const token = sessionStorage.getItem("authToken");
-    const userId = sessionStorage.getItem("userId");
-
-    if (!token || !userId) {
-        console.error("User ID or token is missing. Cannot log pull.");
-        return;
-    }
-
+    async function logPull(userId, cardName, rarity) {
     try {
+        const payload = { user_id: userId, card_name: cardName, rarity: rarity };
+        console.log("Payload being sent to backend:", payload);
+
         const response = await fetch(`${backendUrl}/pulls`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ user_id: userId, card_name: cardName, rarity }),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
         });
+
+        const result = await response.json(); // Parse JSON once
 
         if (!response.ok) {
-            throw new Error(`Failed to log pull: ${response.status}`);
+            console.error("Server responded with an error:", result); // Use the parsed result
+        } else {
+            console.log('Logged pull:', result);
         }
-
-        console.log("Pull logged successfully!");
     } catch (error) {
-        console.error("Error logging pull:", error);
+        console.error('Error logging pull:', error);
     }
 }
-  
-   async function fetchTopCards() {
-      try {
-        const response = await fetch(`${backendUrl}/analytics/top-cards`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-        if (!response.ok) throw new Error("Failed to fetch top cards");
+    async function recordPull(cardName, rarity) {
+    await fetch('https://icrucialtcg.onrender.com/pulls', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ card_name: cardName, rarity: rarity }),
+    });
+}
 
+    async function fetchUserCollection(userId) {
+    try {
+        const response = await fetch(`${backendUrl}/collection/${userId}`);
+        const collection = await response.json();
+
+        const collectionDiv = document.getElementById("user-collection");
+        collectionDiv.innerHTML = "<h2>Your Collection</h2>";
+
+        collection.forEach(card => {
+            // Create a container for each card
+            const cardDiv = document.createElement("div");
+            cardDiv.className = `card-entry rarity-${card.rarity.toLowerCase()}`; // Add rarity class
+
+            // Add card image
+            const img = document.createElement("img");
+            img.src = cardImages[card.card_name] || "./images/default.png"; // Default image if missing
+            img.alt = card.card_name;
+            img.className = "card-image";
+
+            // Add card text
+            const textDiv = document.createElement("div");
+            textDiv.className = "card-text";
+            textDiv.innerHTML = `
+                <strong>Card:</strong> ${card.card_name} <br>
+                <strong>Rarity:</strong> ${card.rarity}
+            `;
+
+            // Append image and text to the card container
+            cardDiv.appendChild(img);
+            cardDiv.appendChild(textDiv);
+
+            // Append the styled card to the collectionDiv
+            collectionDiv.appendChild(cardDiv);
+        });
+    } catch (error) {
+        console.error("Error fetching collection:", error);
+    }
+}
+async function fetchTopCards() {
+    try {
+        const response = await fetch(`${backendUrl}/analytics/top-cards`);
         const topCards = await response.json();
-        const topCardsDiv = document.getElementById("top-cards");
-        topCardsDiv.innerHTML = "<h2>Top Pulled Cards</h2>";
 
-        topCards.forEach((card) => {
-          const cardDiv = document.createElement("div");
-          cardDiv.textContent = `Card: ${card.card_name}, Pulls: ${card.pulls}`;
-          topCardsDiv.appendChild(cardDiv);
-        });
-      } catch (error) {
+        // Prepare data for the chart
+        const cardNames = topCards.map(card => card.card_name); // Get card names
+        const pullCounts = topCards.map(card => card.pulls); // Get pull counts
+
+        // Render the chart
+        renderTopCardsChart(cardNames, pullCounts);
+    } catch (error) {
         console.error("Error fetching top cards:", error);
-      }
     }
+}
 
- async function fetchRarityDistribution() {
-      try {
-        const response = await fetch(`${backendUrl}/analytics/rarity-distribution`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-        if (!response.ok) throw new Error("Failed to fetch rarity distribution");
+function renderTopCardsChart(cardNames, pullCounts) {
+    const ctx = document.getElementById('topCardsChart').getContext('2d');
 
+    new Chart(ctx, {
+        type: 'bar', // Use a bar chart
+        data: {
+            labels: cardNames, // X-axis labels (card names)
+            datasets: [{
+                label: 'Number of Pulls',
+                data: pullCounts, // Y-axis data (pull counts)
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.2)', // Light blue
+                    'rgba(54, 162, 235, 0.2)', // Blue
+                    'rgba(255, 206, 86, 0.2)', // Yellow
+                    'rgba(255, 99, 132, 0.2)', // Red
+                    'rgba(153, 102, 255, 0.2)' // Purple
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)', // Light blue border
+                    'rgba(54, 162, 235, 1)', // Blue border
+                    'rgba(255, 206, 86, 1)', // Yellow border
+                    'rgba(255, 99, 132, 1)', // Red border
+                    'rgba(153, 102, 255, 1)' // Purple border
+                ],
+                borderWidth: 1 // Thickness of borders
+            }]
+        },
+        options: {
+    plugins: {
+        tooltip: {
+            callbacks: {
+                label: function(context) {
+                    return `Card: ${context.label}, Pulls: ${context.raw}`;
+                }
+            }
+        }
+    }
+}
+    });
+}
+
+async function fetchRarityDistribution() {
+    try {
+        const response = await fetch(`${backendUrl}/analytics/rarity-distribution`);
         const distribution = await response.json();
-        const rarityDiv = document.getElementById("rarity-distribution");
-        rarityDiv.innerHTML = "<h2>Rarity Distribution</h2>";
+        const rarityDiv = document.getElementById('rarity-distribution');
+        rarityDiv.innerHTML = '<h2>Rarity Distribution</h2>';
 
-        distribution.forEach((rarity) => {
-          const rarityDivChild = document.createElement("div");
-          rarityDivChild.textContent = `Rarity: ${rarity.rarity}, Pulls: ${rarity.pulls}`;
-          rarityDiv.appendChild(rarityDivChild);
+        distribution.forEach(rarity => {
+            const rarityDivChild = document.createElement('div');
+            rarityDivChild.textContent = `Rarity: ${rarity.rarity}, Pulls: ${rarity.pulls}`;
+            rarityDiv.appendChild(rarityDivChild);
         });
-      } catch (error) {
-        console.error("Error fetching rarity distribution:", error);
-      }
+    } catch (error) {
+        console.error('Error fetching rarity distribution:', error);
     }
+}
+    
     function weightedRandom(items, weights) {
       const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
       const random = Math.random() * totalWeight;
@@ -978,6 +956,10 @@ async function fetchUserCollection() {
         }
       }
     }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      drawThreeCards();
+    });
 
     function playSound(id) {
       const audio = document.getElementById(id);
@@ -1081,18 +1063,20 @@ pulledCards.forEach(async (card) => {
     await logPull(userId, card.card_name, card.rarity);
 });
 }
-document.addEventListener("DOMContentLoaded", () => {
-    // Check if the page is loaded with query parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    if (!urlParams.has("token") || !urlParams.has("user_id")) {
-        console.warn("Query parameters missing, redirecting to the root.");
-        window.history.replaceState({}, document.title, "/icrucialtcg/");
-    }
 
-    handleOAuthCallback();
-    drawCards();
-});
+document.addEventListener("DOMContentLoaded", drawCards);
 
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <button onclick="fetchUserCollection('user123')">Show My Collection</button>
+<div id="user-collection"></div>
+<div id="rarity-distribution"></div>
+  <button onclick="fetchRarityDistribution()">Show Rarity Distribution</button>
+  <div id="top-cards-section">
+    <h2>Top Pulled Cards</h2>
+    <canvas id="topCardsChart" width="400" height="200"></canvas>
+</div>
+  <div id="top-cards"></div>
+<button onclick="fetchTopCards()">Show Top Cards</button>
 </body>
 </html>
